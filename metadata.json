@@ -2,5 +2,16 @@
   "name": "List Drop",
   "symbol": "LIST",
   "description": "Unburdened by Truth",
-  "image": "https://x.com/ListDrop/photo"
+  "image": "https://foxsake123.github.io/token-metadata/images/list-token.png",
+  "external_url": "",
+  "attributes": [],
+  "properties": {
+    "files": [
+      {
+        "uri": "https://foxsake123.github.io/token-metadata/images/list-token.png",
+        "type": "image/png"
+      }
+    ],
+    "category": "image"
+  }
 }

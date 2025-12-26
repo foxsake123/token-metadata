@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:www.list-coin.com)",
+      "WebFetch(domain:polymarket.com)",
+      "Bash(git push:*)"
+    ]
+  }
+}

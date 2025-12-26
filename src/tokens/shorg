@@ -1,0 +1,15 @@
+{
+  "chainId": 101,
+  "address": "5oKiBTTUutgk95g4MEgxUHtWJ9n21QXPSAusL6ic8KgM",
+  "symbol": "LIST",
+  "name": "Unburdened",
+  "decimals": 9,
+  "logoURI": "https://www.list-coin.com/assets/list-logo.png",
+  "tags": ["meme", "burn-token", "community"],
+  "extensions": {
+    "website": "https://www.list-coin.com",
+    "twitter": "https://twitter.com/ListDrop",
+    "dexscreener": "https://dexscreener.com/solana/5oKiBTTUutgk95g4MEgxUHtWJ9n21QXPSAusL6ic8KgM",
+    "description": "The more names drop. The more $LIST pops. Event-driven burn token tied to truth revelations."
+  }
+}

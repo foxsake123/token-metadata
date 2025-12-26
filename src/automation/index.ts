@@ -6,3 +6,4 @@
 
 export * from './scheduler';
 export * from './social';
+export * from './twitter';

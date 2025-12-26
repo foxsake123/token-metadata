@@ -1,0 +1,15 @@
+# Railway deployment configuration for $LIST Token Automation
+# Deploy with: railway up
+
+[build]
+builder = "nixpacks"
+
+[deploy]
+startCommand = "npm run start:scheduler"
+healthcheckPath = "/health"
+healthcheckTimeout = 300
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 3
+
+[[services]]
+name = "list-scheduler"

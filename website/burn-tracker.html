@@ -1,0 +1,274 @@
+<!--
+  LIST Token Burn Tracker Widget
+  Embed this in TypeDream using: /embed > Code
+
+  Features:
+  - Live burn statistics
+  - Animated counters
+  - Responsive design
+-->
+
+<style>
+  .list-burn-tracker {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border-radius: 16px;
+    padding: 24px;
+    color: white;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .list-burn-tracker h2 {
+    margin: 0 0 20px 0;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .burn-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .stat-card {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+  }
+
+  .stat-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: #ff6b35;
+    margin-bottom: 4px;
+  }
+
+  .stat-label {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .burn-progress {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 24px;
+  }
+
+  .progress-bar {
+    height: 24px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 12px 0;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ff6b35, #ff4444);
+    border-radius: 12px;
+    transition: width 1s ease;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 8px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .progress-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .burn-list {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .burn-list-header {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 12px 16px;
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  .burn-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .burn-item:last-child {
+    border-bottom: none;
+  }
+
+  .burn-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .burn-status {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  .burn-status.executed {
+    background: #4ade80;
+  }
+
+  .burn-status.pending {
+    background: #fbbf24;
+  }
+
+  .burn-percent {
+    font-weight: 600;
+    color: #ff6b35;
+  }
+
+  .fire-emoji {
+    animation: flicker 0.5s infinite alternate;
+  }
+
+  @keyframes flicker {
+    from { opacity: 1; }
+    to { opacity: 0.7; }
+  }
+</style>
+
+<div class="list-burn-tracker">
+  <h2><span class="fire-emoji">🔥</span> $LIST Burn Tracker</h2>
+
+  <div class="burn-stats">
+    <div class="stat-card">
+      <div class="stat-value" id="burned-percent">25%</div>
+      <div class="stat-label">Total Burned</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="burned-tokens">250M</div>
+      <div class="stat-label">Tokens Destroyed</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="pending-percent">34%</div>
+      <div class="stat-label">Pending Burns</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="names-confirmed">8</div>
+      <div class="stat-label">Names Confirmed</div>
+    </div>
+  </div>
+
+  <div class="burn-progress">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <span>Burn Progress</span>
+      <span style="color: #ff6b35; font-weight: 600;">25% / 59%</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" style="width: 42%;">25%</div>
+    </div>
+    <div class="progress-labels">
+      <span>0%</span>
+      <span>Max: 59%</span>
+    </div>
+  </div>
+
+  <div class="burn-list">
+    <div class="burn-list-header">Epstein List - Executed Burns</div>
+    <div class="burn-item">
+      <div class="burn-name">
+        <span class="burn-status executed"></span>
+        Prince Andrew
+      </div>
+      <span class="burn-percent">5.0%</span>
+    </div>
+    <div class="burn-item">
+      <div class="burn-name">
+        <span class="burn-status executed"></span>
+        Bill Gates
+      </div>
+      <span class="burn-percent">4.5%</span>
+    </div>
+    <div class="burn-item">
+      <div class="burn-name">
+        <span class="burn-status executed"></span>
+        Alan Dershowitz
+      </div>
+      <span class="burn-percent">3.5%</span>
+    </div>
+    <div class="burn-item">
+      <div class="burn-name">
+        <span class="burn-status executed"></span>
+        Bill Clinton
+      </div>
+      <span class="burn-percent">3.5%</span>
+    </div>
+    <div class="burn-item">
+      <div class="burn-name">
+        <span class="burn-status executed"></span>
+        Stephen Hawking
+      </div>
+      <span class="burn-percent">3.0%</span>
+    </div>
+    <div class="burn-item">
+      <div class="burn-name">
+        <span class="burn-status executed"></span>
+        Donald Trump
+      </div>
+      <span class="burn-percent">2.0%</span>
+    </div>
+    <div class="burn-item">
+      <div class="burn-name">
+        <span class="burn-status executed"></span>
+        Michael Jackson
+      </div>
+      <span class="burn-percent">2.0%</span>
+    </div>
+    <div class="burn-item">
+      <div class="burn-name">
+        <span class="burn-status executed"></span>
+        Barack Obama
+      </div>
+      <span class="burn-percent">1.5%</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Animate numbers on load
+  function animateValue(id, start, end, duration, suffix = '') {
+    const obj = document.getElementById(id);
+    if (!obj) return;
+
+    let startTime = null;
+    const step = (timestamp) => {
+      if (!startTime) startTime = timestamp;
+      const progress = Math.min((timestamp - startTime) / duration, 1);
+      const value = Math.floor(progress * (end - start) + start);
+      obj.textContent = value + suffix;
+      if (progress < 1) {
+        requestAnimationFrame(step);
+      }
+    };
+    requestAnimationFrame(step);
+  }
+
+  // Run animations
+  setTimeout(() => {
+    animateValue('burned-percent', 0, 25, 1500, '%');
+    animateValue('burned-tokens', 0, 250, 1500, 'M');
+    animateValue('pending-percent', 0, 34, 1500, '%');
+    animateValue('names-confirmed', 0, 8, 1500, '');
+  }, 500);
+</script>

@@ -13,6 +13,11 @@
     "build": "run-p build:*",
     "build:main": "tsc -p tsconfig.json",
     "build:module": "tsc -p tsconfig.module.json",
+    "start:scheduler": "node dist/main/automation/scheduler.js",
+    "dev:scheduler": "npx ts-node src/automation/scheduler.ts",
+    "burn:dry-run": "npx ts-node scripts/execute-burns.ts --dry-run",
+    "burn:execute": "npx ts-node scripts/execute-burns.ts --execute",
+    "tweet:test": "npx ts-node src/automation/twitter.ts --test",
     "fix": "run-s fix:*",
     "fix:prettier": "prettier \"src/**/*.ts\" --write",
     "fix:lint": "eslint src --ext .ts --fix",
@@ -107,6 +112,7 @@
   "dependencies": {
     "@solana/spl-token": "^0.4.0",
     "@solana/web3.js": "^1.95.0",
+    "bs58": "^5.0.0",
     "cross-fetch": "3.0.6"
   }
 }

@@ -1,0 +1,288 @@
+<!--
+  LIST Token - Diddy Trial Burn Widget
+  Embed this in TypeDream using: /embed > Code
+
+  Features:
+  - Inverse probability burn display
+  - Countdown timer
+  - Airdrop info
+-->
+
+<style>
+  .diddy-widget {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: linear-gradient(135deg, #2d1b4e 0%, #1a1a2e 100%);
+    border-radius: 16px;
+    padding: 24px;
+    color: white;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .diddy-header {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  .diddy-header h2 {
+    margin: 0 0 8px 0;
+    font-size: 24px;
+  }
+
+  .diddy-header p {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+  }
+
+  .countdown {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .countdown-item {
+    text-align: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 12px 16px;
+    min-width: 60px;
+  }
+
+  .countdown-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #a855f7;
+  }
+
+  .countdown-label {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+  }
+
+  .verdict-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .verdict-row {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 12px 16px;
+    gap: 12px;
+  }
+
+  .verdict-outcome {
+    flex: 1;
+    font-weight: 500;
+  }
+
+  .verdict-odds {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  .verdict-burn {
+    font-weight: 700;
+    color: #ff6b35;
+    min-width: 50px;
+    text-align: right;
+  }
+
+  .verdict-burn.mega {
+    color: #ff4444;
+    font-size: 18px;
+  }
+
+  .inverse-note {
+    background: linear-gradient(90deg, rgba(255, 107, 53, 0.2), rgba(168, 85, 247, 0.2));
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  .inverse-note strong {
+    color: #ff6b35;
+  }
+
+  .bonus-burns {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 24px;
+  }
+
+  .bonus-title {
+    font-weight: 600;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .bonus-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 14px;
+  }
+
+  .bonus-item:last-child {
+    border-bottom: none;
+  }
+
+  .airdrop-section {
+    background: linear-gradient(135deg, rgba(74, 222, 128, 0.2), rgba(34, 197, 94, 0.1));
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+  }
+
+  .airdrop-title {
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .airdrop-info {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  .airdrop-highlight {
+    color: #4ade80;
+    font-weight: 600;
+  }
+</style>
+
+<div class="diddy-widget">
+  <div class="diddy-header">
+    <h2>⚖️ Diddy Trial Burns</h2>
+    <p>Inverse probability system - less likely = bigger burn</p>
+  </div>
+
+  <div class="countdown">
+    <div class="countdown-item">
+      <div class="countdown-value" id="days">--</div>
+      <div class="countdown-label">Days</div>
+    </div>
+    <div class="countdown-item">
+      <div class="countdown-value" id="hours">--</div>
+      <div class="countdown-label">Hours</div>
+    </div>
+    <div class="countdown-item">
+      <div class="countdown-value" id="mins">--</div>
+      <div class="countdown-label">Mins</div>
+    </div>
+    <div class="countdown-item">
+      <div class="countdown-value" id="secs">--</div>
+      <div class="countdown-label">Secs</div>
+    </div>
+  </div>
+
+  <div class="inverse-note">
+    <strong>🔥 Inverse Probability:</strong> The less likely the outcome, the bigger the burn!
+  </div>
+
+  <div class="verdict-grid">
+    <div class="verdict-row">
+      <span class="verdict-outcome">No Prison Time</span>
+      <span class="verdict-odds">28.6% odds</span>
+      <span class="verdict-burn mega">8.0%</span>
+    </div>
+    <div class="verdict-row">
+      <span class="verdict-outcome">Life in Prison</span>
+      <span class="verdict-odds">~5% odds</span>
+      <span class="verdict-burn mega">5.0%</span>
+    </div>
+    <div class="verdict-row">
+      <span class="verdict-outcome">20+ Years (Not Life)</span>
+      <span class="verdict-odds">13.3% odds</span>
+      <span class="verdict-burn">3.0%</span>
+    </div>
+    <div class="verdict-row">
+      <span class="verdict-outcome">16-20 Years</span>
+      <span class="verdict-odds">40% odds</span>
+      <span class="verdict-burn">1.5%</span>
+    </div>
+    <div class="verdict-row">
+      <span class="verdict-outcome">11-15 Years (Likely)</span>
+      <span class="verdict-odds">60% odds</span>
+      <span class="verdict-burn">0.5%</span>
+    </div>
+  </div>
+
+  <div class="bonus-burns">
+    <div class="bonus-title">➕ Bonus Burns</div>
+    <div class="bonus-item">
+      <span>Sex Trafficking Conviction</span>
+      <span style="color: #ff6b35;">+1.0%</span>
+    </div>
+    <div class="bonus-item">
+      <span>All Charges Guilty</span>
+      <span style="color: #ff6b35;">+2.0%</span>
+    </div>
+    <div class="bonus-item">
+      <span>RICO Conviction</span>
+      <span style="color: #ff6b35;">+0.5%</span>
+    </div>
+    <div class="bonus-item">
+      <span>Celebrity Witness Testifies</span>
+      <span style="color: #ff6b35;">+0.5%</span>
+    </div>
+  </div>
+
+  <div class="airdrop-section">
+    <div class="airdrop-title">💰 Holder Airdrops</div>
+    <div class="airdrop-info">
+      Snapshot taken 1 hour before verdict<br>
+      <span class="airdrop-highlight">Up to 5% airdrop</span> based on outcome<br>
+      Min: 10,000 $LIST | Max: 500,000 $LIST per wallet
+    </div>
+  </div>
+</div>
+
+<script>
+  // Countdown to estimated verdict (May 2025)
+  const verdictDate = new Date('2025-05-15T12:00:00');
+
+  function updateCountdown() {
+    const now = new Date();
+    const diff = verdictDate - now;
+
+    if (diff <= 0) {
+      document.getElementById('days').textContent = '0';
+      document.getElementById('hours').textContent = '0';
+      document.getElementById('mins').textContent = '0';
+      document.getElementById('secs').textContent = '0';
+      return;
+    }
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+    document.getElementById('days').textContent = days;
+    document.getElementById('hours').textContent = hours;
+    document.getElementById('mins').textContent = mins;
+    document.getElementById('secs').textContent = secs;
+  }
+
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+</script>

@@ -2,45 +2,114 @@
 
 **The more names drop. The more $LIST pops.**
 
-Event-driven burn token on Solana tied to Polymarket Epstein list predictions.
+Event-driven burn token on Solana with automated Polymarket integration.
 
 ## Token Details
 
-- **Token:** LIST (Unburdened)
-- **Mint Address:** `5oKiBTTUutgk95g4MEgxUHtWJ9n21QXPSAusL6ic8KgM`
-- **Blockchain:** Solana
-- **Decimals:** 9
-- **Max Burn:** 44% of supply
+| Property | Value |
+|----------|-------|
+| **Symbol** | LIST |
+| **Name** | Unburdened |
+| **Mint** | `5oKiBTTUutgk95g4MEgxUHtWJ9n21QXPSAusL6ic8KgM` |
+| **Blockchain** | Solana |
+| **Decimals** | 9 |
+| **Website** | [list-coin.com](https://list-coin.com) |
 
-## Burn Mechanism
+---
 
-Burns are triggered by two events:
+## Burn Events
 
-### 1. Polymarket Confirmations (42%)
-When a name from the [Polymarket Epstein predictions](https://polymarket.com/event/who-will-be-named-in-newly-released-epstein-files) is officially confirmed, the corresponding percentage of tokens is burned.
+### Event 1: Epstein List (44% max burn)
 
-| Tier | Odds Range | Burn % | Names |
-|------|-----------|--------|-------|
-| 1 | >20% | 4.0% each | Tony Blair, Al Gore |
-| 2 | 15-20% | 3.0% each | Jamie Dimon, Kirsten Gillibrand, Oprah Winfrey |
-| 3 | 10-15% | 2.5% each | Ellen DeGeneres, Anderson Cooper, Piers Morgan, Henry Kissinger, Rachel Maddow, Sean Combs, David Koch, Jimmy Kimmel |
-| 4 | <10% | 1.5% each | Robert Downey Jr., Quentin Tarantino, Tom Hanks |
+Burns triggered when names are confirmed on Polymarket predictions.
 
-### 2. Community Milestones (2%)
-- 10K Holders: 0.5%
-- $1M Market Cap: 0.5%
-- 50K Twitter Followers: 0.5%
-- $10M Volume: 0.5%
+#### Resolved Burns (25% - Execute Immediately)
+| Name | Burn % | Status |
+|------|--------|--------|
+| Prince Andrew | 5.0% | ✅ Confirmed |
+| Bill Gates | 4.5% | ✅ Confirmed |
+| Alan Dershowitz | 3.5% | ✅ Confirmed |
+| Bill Clinton | 3.5% | ✅ Confirmed |
+| Stephen Hawking | 3.0% | ✅ Confirmed |
+| Donald Trump | 2.0% | ✅ Confirmed |
+| Michael Jackson | 2.0% | ✅ Confirmed |
+| Barack Obama | 1.5% | ✅ Confirmed |
 
-## Links
+#### Active Predictions (14.5% pending)
+| Name | Current Odds | Burn % |
+|------|-------------|--------|
+| Tony Blair | 27% | 2.5% |
+| Al Gore | 20% | 2.0% |
+| Kirsten Gillibrand | 19% | 1.5% |
+| Jamie Dimon | 18% | 1.5% |
+| Oprah Winfrey | 16% | 1.5% |
+| + 6 more... | | |
 
-- **Website:** https://www.list-coin.com
-- **Burn Schedule:** https://www.list-coin.com/burn-schedule
-- **Twitter:** https://twitter.com/ListDrop
-- **DEX:** [Raydium](https://raydium.io)
-- **Chart:** [DexScreener](https://dexscreener.com/solana/5oKiBTTUutgk95g4MEgxUHtWJ9n21QXPSAusL6ic8KgM)
+#### Community Milestones (14%)
+- 100 Holders: 2%
+- 500 Holders: 3%
+- $25K Volume: 2%
+- $100K Volume: 3%
+- 1K Twitter: 1.5%
+- 5K Twitter: 2.5%
 
-## Development
+---
+
+### Event 2: Diddy Trial (15% burn pool)
+
+Inverse probability burns - less likely outcomes trigger bigger burns.
+
+| Verdict | Probability | Burn % |
+|---------|-------------|--------|
+| No Prison Time | 28.6% | **8.0%** |
+| Life in Prison | 5% | **5.0%** |
+| 20+ Years | 13.3% | **3.0%** |
+| 16-20 Years | 40% | 1.5% |
+| 11-15 Years | 60% | 0.5% |
+
+**Bonus Burns:**
+- Sex Trafficking Conviction: +1%
+- All Charges Guilty: +2%
+- RICO Conviction: +0.5%
+- Celebrity Witness: +0.5%
+
+**Holder Airdrops:**
+- No Prison: 5% of holdings
+- Life Sentence: 3% of holdings
+- 20+ Years: 2% of holdings
+- Other: 1% of holdings
+
+---
+
+## Automation
+
+### Burn Scheduler
+Monitors Polymarket and executes burns automatically.
+
+```typescript
+import { BurnScheduler } from '@list-coin/token';
+
+const scheduler = new BurnScheduler(RPC_URL);
+scheduler.start(60000); // Check every minute
+```
+
+### Social Media Automation
+Auto-generates tweets for burn events.
+
+```typescript
+import { TweetGenerator, ContentCalendar } from '@list-coin/token';
+
+// Generate burn announcement
+const tweet = TweetGenerator.burnExecuted(target, txSignature);
+
+// Generate weekly content
+const calendar = new ContentCalendar();
+const posts = calendar.generateWeeklyContent();
+```
+
+---
+
+## Quick Start
 
 ```bash
 # Install dependencies
@@ -49,20 +118,50 @@ npm install
 # Build
 npm run build
 
-# Test
-npm test
+# Run scheduler (development)
+npx ts-node src/automation/scheduler.ts
 ```
 
-## Burn Execution
+## Environment Variables
 
-The burn system integrates with Polymarket API to detect confirmed predictions and execute burns automatically.
-
-```typescript
-import { ListBurnExecutor } from '@list-coin/token';
-
-const executor = new ListBurnExecutor(RPC_URL, BURN_AUTHORITY_SECRET);
-const results = await executor.executePendingBurns();
+```bash
+SOLANA_RPC_URL=https://api.mainnet-beta.solana.com
+BURN_AUTHORITY_SECRET=<base58-encoded-keypair>
+TWITTER_API_KEY=<twitter-api-key>
+TWITTER_API_SECRET=<twitter-api-secret>
+TWITTER_ACCESS_TOKEN=<access-token>
+TWITTER_ACCESS_SECRET=<access-secret>
 ```
+
+---
+
+## Links
+
+- **Website:** https://list-coin.com
+- **Burn Schedule:** https://list-coin.com/burn-schedule
+- **Twitter:** https://twitter.com/ListDrop
+- **Polymarket:** https://polymarket.com/event/who-will-be-named-in-newly-released-epstein-files
+- **DexScreener:** https://dexscreener.com/solana/5oKiBTTUutgk95g4MEgxUHtWJ9n21QXPSAusL6ic8KgM
+
+---
+
+## Project Structure
+
+```
+src/
+├── burn/
+│   ├── config.ts      # Burn targets and allocations
+│   ├── executor.ts    # SPL token burn execution
+│   ├── polymarket.ts  # Polymarket API integration
+│   └── index.ts
+├── automation/
+│   ├── scheduler.ts   # Automated monitoring
+│   ├── social.ts      # Tweet generation
+│   └── index.ts
+└── index.ts
+```
+
+---
 
 ## License
 

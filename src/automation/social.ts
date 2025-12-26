@@ -1,0 +1,384 @@
+/**
+ * LIST Token Social Media Automation
+ *
+ * Automated tweet generation and scheduling for:
+ * - Burn announcements
+ * - Polymarket odds updates
+ * - Milestone celebrations
+ * - Community engagement
+ */
+
+import {
+  BurnTarget,
+  EPSTEIN_RESOLVED_BURNS,
+  EPSTEIN_ACTIVE_BURNS,
+  DIDDY_SENTENCE_BURNS,
+  calculateBurnAmount,
+  formatBurnAmount,
+  getTotalOwedBurnPercent,
+} from '../burn/config';
+
+// =============================================================================
+// TWEET TEMPLATES
+// =============================================================================
+
+export const TWEET_TEMPLATES = {
+  // Burn execution tweets
+  burnExecuted: [
+    `🔥 BURN ALERT 🔥\n\n{name} just got CONFIRMED on the list.\n\n{percent}% of $LIST supply = GONE FOREVER\n\n{amount} tokens burned 💀\n\nTX: {txLink}\n\n#LIST #Solana #TokenBurn`,
+
+    `THE LIST GROWS 📜\n\n{name} ✅ CONFIRMED\n\n🔥 {percent}% BURNED\n💀 {amount} $LIST destroyed\n\nThe more names drop...\nThe more $LIST pops 📈\n\n#Solana #Memecoin`,
+
+    `⚠️ BREAKING ⚠️\n\n{name} added to the list.\n\nConsequence? {percent}% of $LIST\nburned on-chain. Forever.\n\n{amount} tokens 🔥\n\nVerify: {txLink}\n\n#LIST #CryptoTwitter`,
+  ],
+
+  // Burn scheduled tweets
+  burnScheduled: [
+    `🚨 BURN INCOMING 🚨\n\n{name} just confirmed on Polymarket!\n\n{percent}% burn executing soon...\n\nGet your $LIST before it's too late 👀\n\n#LIST #Solana`,
+
+    `👀 NEW NAME DROPPED\n\n{name} is ON THE LIST\n\nBurn scheduled: {percent}%\n\nTick tock... 🔥\n\n#LIST #TokenBurn`,
+  ],
+
+  // Polymarket odds updates
+  oddsUpdate: [
+    `📊 POLYMARKET UPDATE\n\nHottest $LIST burn candidates:\n\n{oddsList}\n\nWho's next? 👀\n\nTrack live: polymarket.com\n\n#LIST #Polymarket`,
+
+    `🎰 ODDS CHECK\n\n{topName}: {topOdds}% chance\n{secondName}: {secondOdds}% chance\n\nIf confirmed = MASSIVE BURNS 🔥\n\nAre you holding $LIST?\n\n#Solana #Memecoin`,
+  ],
+
+  // Milestone tweets
+  milestone: [
+    `🏆 MILESTONE UNLOCKED 🏆\n\n{milestone} achieved!\n\nReward: {percent}% BURN 🔥\n\nThank you $LIST army! 🫡\n\n#LIST #Community`,
+
+    `WE DID IT! 🎉\n\n{milestone} ✅\n\nBurning {percent}% to celebrate!\n\nOnward to the next goal 🚀\n\n#LIST #Solana`,
+  ],
+
+  // Diddy trial tweets
+  diddyVerdict: [
+    `⚖️ DIDDY VERDICT IS IN ⚖️\n\n{verdict}\n\nBurn triggered: {percent}%\n{bonuses}\n\nTotal burn: {totalPercent}% 🔥\n\nAirdrops incoming for holders! 💰\n\n#Diddy #LIST`,
+
+    `🔔 BREAKING: DIDDY SENTENCED\n\n{verdict}\n\n$LIST response:\n🔥 {percent}% burned\n💰 {airdropPercent}% airdrop to holders\n\nThe truth always wins.\n\n#LIST #Justice`,
+  ],
+
+  // Engagement tweets
+  engagement: [
+    `The more names drop.\nThe more $LIST pops. 📈\n\n{burned}% already burned 🔥\n{pending}% more waiting...\n\nWho's next on the list? 👇\n\n#LIST #Solana`,
+
+    `$LIST BURN TRACKER 🔥\n\n✅ Burned: {burned}%\n⏳ Pending: {pending}%\n📊 Next target: {nextName}\n\nAre you positioned? 👀\n\n#Memecoin #Solana`,
+
+    `Why $LIST?\n\n✅ Real burns tied to real events\n✅ Polymarket verified\n✅ On-chain transparency\n✅ Deflationary by design\n\nThe truth token. 🔥\n\n#LIST #Solana`,
+  ],
+
+  // FOMO tweets
+  fomo: [
+    `Imagine not holding $LIST when the next name drops... 📜\n\nEvery confirmation = permanent burn\nEvery burn = less supply\n\n🔥🔥🔥\n\n#LIST #FOMO`,
+
+    `⚠️ PSA ⚠️\n\nWhen Polymarket confirms a name:\n→ We burn tokens\n→ Supply decreases\n→ You wish you bought more\n\nDon't say we didn't warn you.\n\n$LIST 🔥`,
+  ],
+
+  // Countdown tweets
+  countdown: [
+    `⏰ {days} DAYS LEFT\n\nPolymarket Epstein market closes Dec 31\n\nAny confirmations before then = BURNS\n\nTime is running out to accumulate $LIST 👀\n\n#Solana`,
+
+    `📅 COUNTDOWN\n\nDiddy trial approaching...\n\nVerdict possibilities:\n• No Prison: 8% burn\n• Life: 5% burn\n• 20+ years: 3% burn\n\nPlus bonuses 🔥\n\nAre you ready?\n\n#LIST`,
+  ],
+};
+
+// =============================================================================
+// TWEET GENERATOR
+// =============================================================================
+
+export interface TweetData {
+  template: string;
+  content: string;
+  scheduledFor?: Date;
+  type: 'burn' | 'milestone' | 'odds' | 'engagement' | 'verdict';
+}
+
+export class TweetGenerator {
+  /**
+   * Generate burn execution tweet
+   */
+  static burnExecuted(target: BurnTarget, txSignature: string): TweetData {
+    const templates = TWEET_TEMPLATES.burnExecuted;
+    const template = templates[Math.floor(Math.random() * templates.length)];
+
+    const amount = formatBurnAmount(calculateBurnAmount(target));
+    const txLink = `solscan.io/tx/${txSignature}`;
+
+    const content = template
+      .replace('{name}', target.name)
+      .replace('{percent}', target.burnAllocationPercent.toString())
+      .replace('{amount}', amount)
+      .replace('{txLink}', txLink);
+
+    return { template, content, type: 'burn' };
+  }
+
+  /**
+   * Generate burn scheduled tweet
+   */
+  static burnScheduled(target: BurnTarget): TweetData {
+    const templates = TWEET_TEMPLATES.burnScheduled;
+    const template = templates[Math.floor(Math.random() * templates.length)];
+
+    const content = template
+      .replace('{name}', target.name)
+      .replace('{percent}', target.burnAllocationPercent.toString());
+
+    return { template, content, type: 'burn' };
+  }
+
+  /**
+   * Generate odds update tweet
+   */
+  static oddsUpdate(targets: BurnTarget[]): TweetData {
+    const sorted = [...targets].sort((a, b) => b.polymarketOdds - a.polymarketOdds);
+    const top5 = sorted.slice(0, 5);
+
+    const oddsList = top5
+      .map((t, i) => `${i + 1}. ${t.name}: ${t.polymarketOdds}%`)
+      .join('\n');
+
+    const template = TWEET_TEMPLATES.oddsUpdate[0];
+    const content = template
+      .replace('{oddsList}', oddsList)
+      .replace('{topName}', top5[0]?.name || 'TBD')
+      .replace('{topOdds}', top5[0]?.polymarketOdds.toString() || '0')
+      .replace('{secondName}', top5[1]?.name || 'TBD')
+      .replace('{secondOdds}', top5[1]?.polymarketOdds.toString() || '0');
+
+    return { template, content, type: 'odds' };
+  }
+
+  /**
+   * Generate milestone tweet
+   */
+  static milestone(milestoneName: string, burnPercent: number): TweetData {
+    const templates = TWEET_TEMPLATES.milestone;
+    const template = templates[Math.floor(Math.random() * templates.length)];
+
+    const content = template
+      .replace('{milestone}', milestoneName)
+      .replace('{percent}', burnPercent.toString());
+
+    return { template, content, type: 'milestone' };
+  }
+
+  /**
+   * Generate Diddy verdict tweet
+   */
+  static diddyVerdict(
+    verdict: string,
+    burnPercent: number,
+    bonuses: string[],
+    airdropPercent: number
+  ): TweetData {
+    const templates = TWEET_TEMPLATES.diddyVerdict;
+    const template = templates[Math.floor(Math.random() * templates.length)];
+
+    const bonusText = bonuses.length > 0
+      ? `Bonuses: ${bonuses.join(', ')}`
+      : 'No bonus conditions met';
+
+    const totalPercent = burnPercent + bonuses.length * 0.5; // Rough estimate
+
+    const content = template
+      .replace('{verdict}', verdict)
+      .replace('{percent}', burnPercent.toString())
+      .replace('{bonuses}', bonusText)
+      .replace('{totalPercent}', totalPercent.toString())
+      .replace('{airdropPercent}', airdropPercent.toString());
+
+    return { template, content, type: 'verdict' };
+  }
+
+  /**
+   * Generate engagement tweet
+   */
+  static engagement(burnedPercent: number, pendingPercent: number, nextTarget?: string): TweetData {
+    const templates = TWEET_TEMPLATES.engagement;
+    const template = templates[Math.floor(Math.random() * templates.length)];
+
+    const content = template
+      .replace('{burned}', burnedPercent.toString())
+      .replace('{pending}', pendingPercent.toString())
+      .replace('{nextName}', nextTarget || 'TBD');
+
+    return { template, content, type: 'engagement' };
+  }
+
+  /**
+   * Generate countdown tweet
+   */
+  static countdown(daysLeft: number, event: 'epstein' | 'diddy'): TweetData {
+    const templates = TWEET_TEMPLATES.countdown;
+    const template = event === 'epstein' ? templates[0] : templates[1];
+
+    const content = template.replace('{days}', daysLeft.toString());
+
+    return { template, content, type: 'engagement' };
+  }
+
+  /**
+   * Generate FOMO tweet
+   */
+  static fomo(): TweetData {
+    const templates = TWEET_TEMPLATES.fomo;
+    const template = templates[Math.floor(Math.random() * templates.length)];
+
+    return { template, content: template, type: 'engagement' };
+  }
+}
+
+// =============================================================================
+// CONTENT CALENDAR
+// =============================================================================
+
+export interface ScheduledPost {
+  content: string;
+  scheduledFor: Date;
+  type: string;
+  posted: boolean;
+}
+
+export class ContentCalendar {
+  private posts: ScheduledPost[] = [];
+
+  /**
+   * Generate a week's worth of content
+   */
+  generateWeeklyContent(): ScheduledPost[] {
+    const now = new Date();
+    const posts: ScheduledPost[] = [];
+
+    // Daily: Odds update (morning)
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(now);
+      date.setDate(date.getDate() + i);
+      date.setHours(9, 0, 0, 0); // 9 AM
+
+      const tweet = TweetGenerator.oddsUpdate(EPSTEIN_ACTIVE_BURNS);
+      posts.push({
+        content: tweet.content,
+        scheduledFor: date,
+        type: 'odds',
+        posted: false,
+      });
+    }
+
+    // Every other day: Engagement tweet (afternoon)
+    for (let i = 0; i < 7; i += 2) {
+      const date = new Date(now);
+      date.setDate(date.getDate() + i);
+      date.setHours(14, 0, 0, 0); // 2 PM
+
+      const owedPercent = getTotalOwedBurnPercent();
+      const tweet = TweetGenerator.engagement(owedPercent, 44 - owedPercent);
+      posts.push({
+        content: tweet.content,
+        scheduledFor: date,
+        type: 'engagement',
+        posted: false,
+      });
+    }
+
+    // Twice a week: FOMO tweet (evening)
+    for (let i = 1; i < 7; i += 3) {
+      const date = new Date(now);
+      date.setDate(date.getDate() + i);
+      date.setHours(19, 0, 0, 0); // 7 PM
+
+      const tweet = TweetGenerator.fomo();
+      posts.push({
+        content: tweet.content,
+        scheduledFor: date,
+        type: 'fomo',
+        posted: false,
+      });
+    }
+
+    // Weekly: Countdown tweet (Sunday)
+    const sunday = new Date(now);
+    sunday.setDate(sunday.getDate() + (7 - sunday.getDay()));
+    sunday.setHours(12, 0, 0, 0);
+
+    const daysToEndOfYear = Math.ceil(
+      (new Date('2025-12-31').getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+    );
+    const countdown = TweetGenerator.countdown(daysToEndOfYear, 'epstein');
+    posts.push({
+      content: countdown.content,
+      scheduledFor: sunday,
+      type: 'countdown',
+      posted: false,
+    });
+
+    this.posts = posts.sort((a, b) => a.scheduledFor.getTime() - b.scheduledFor.getTime());
+    return this.posts;
+  }
+
+  /**
+   * Get posts due for publishing
+   */
+  getDuePosts(): ScheduledPost[] {
+    const now = new Date();
+    return this.posts.filter(p => !p.posted && p.scheduledFor <= now);
+  }
+
+  /**
+   * Mark post as published
+   */
+  markPosted(post: ScheduledPost) {
+    post.posted = true;
+  }
+
+  /**
+   * Get upcoming posts
+   */
+  getUpcoming(limit: number = 10): ScheduledPost[] {
+    return this.posts
+      .filter(p => !p.posted)
+      .slice(0, limit);
+  }
+}
+
+// =============================================================================
+// TWITTER API INTEGRATION (Placeholder)
+// =============================================================================
+
+export interface TwitterConfig {
+  apiKey: string;
+  apiSecret: string;
+  accessToken: string;
+  accessSecret: string;
+}
+
+export class TwitterPoster {
+  constructor(private config: TwitterConfig) {}
+
+  /**
+   * Post a tweet (placeholder - integrate with Twitter API)
+   */
+  async postTweet(content: string): Promise<string> {
+    console.log('\n📤 POSTING TWEET:');
+    console.log('─'.repeat(50));
+    console.log(content);
+    console.log('─'.repeat(50));
+
+    // In production, use Twitter API v2:
+    // const client = new TwitterApi(this.config);
+    // const tweet = await client.v2.tweet(content);
+    // return tweet.data.id;
+
+    return `mock_tweet_${Date.now()}`;
+  }
+
+  /**
+   * Post with media (placeholder)
+   */
+  async postWithMedia(content: string, mediaUrl: string): Promise<string> {
+    console.log(`📤 POSTING WITH MEDIA: ${mediaUrl}`);
+    return this.postTweet(content);
+  }
+}

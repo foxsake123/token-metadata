@@ -7,6 +7,8 @@
 
 import crypto from 'crypto';
 import https from 'https';
+import { URL } from 'url';
+import 'dotenv/config';
 
 // =============================================================================
 // CONFIGURATION
@@ -231,11 +233,11 @@ export class TwitterClient {
   }
 
   private makeRequest(
-    url: string,
+    requestUrl: string,
     options: { method: string; headers: Record<string, string>; body?: string }
   ): Promise<{ data?: { id: string }; error?: string }> {
     return new Promise((resolve, reject) => {
-      const urlObj = new URL(url);
+      const urlObj = new URL(requestUrl);
 
       const req = https.request(
         {

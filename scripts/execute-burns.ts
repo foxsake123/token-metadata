@@ -13,6 +13,7 @@
  *   BURN_AUTHORITY_SECRET - Base58 encoded keypair with burn authority
  */
 
+import 'dotenv/config';
 import {
   Connection,
   Keypair,

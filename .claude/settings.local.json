@@ -3,7 +3,9 @@
     "allow": [
       "WebFetch(domain:www.list-coin.com)",
       "WebFetch(domain:polymarket.com)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nExecute 25% burn - 8 Epstein list names confirmed\n\nBurns executed:\n- Prince Andrew: 5.0% \\(492,461 LIST\\)\n- Bill Gates: 4.5% \\(443,215 LIST\\)\n- Alan Dershowitz: 3.5% \\(344,723 LIST\\)\n- Bill Clinton: 3.5% \\(344,723 LIST\\)\n- Stephen Hawking: 3.0% \\(295,476 LIST\\)\n- Donald Trump: 2.0% \\(196,984 LIST\\)\n- Michael Jackson: 2.0% \\(196,984 LIST\\)\n- Barack Obama: 1.5% \\(147,738 LIST\\)\n\nTotal: 2,462,304 LIST burned \\(25% of supply\\)\nNew supply: 7,386,928 LIST\n\n- Update burn config with executed status\n- Update website widgets with correct supply\n- Add dotenv to scripts\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")"
     ]
   }
 }

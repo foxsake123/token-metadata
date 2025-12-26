@@ -7,7 +7,7 @@
  */
 
 export const LIST_TOKEN_MINT = '5oKiBTTUutgk95g4MEgxUHtWJ9n21QXPSAusL6ic8KgM';
-export const TOTAL_SUPPLY = 1_000_000_000; // 1 billion tokens
+export const TOTAL_SUPPLY = 9_849_232; // Actual circulating supply
 export const DECIMALS = 9;
 
 export type BurnStatus = 'pending' | 'confirmed' | 'resolved_no' | 'executed';
@@ -38,15 +38,15 @@ export interface BurnEvent {
 // These names have been CONFIRMED on Polymarket - burns are OWED
 // =============================================================================
 export const EPSTEIN_RESOLVED_BURNS: BurnTarget[] = [
-  // Resolved YES - Burns owed
-  { name: 'Prince Andrew', slug: 'prince-andrew', burnAllocationPercent: 5.0, polymarketOdds: 36, status: 'confirmed', resolvedAt: new Date('2024-01-08') },
-  { name: 'Bill Clinton', slug: 'bill-clinton', burnAllocationPercent: 3.5, polymarketOdds: 25, status: 'confirmed', resolvedAt: new Date('2024-01-08') },
-  { name: 'Donald Trump', slug: 'donald-trump', burnAllocationPercent: 2.0, polymarketOdds: 15, status: 'confirmed', resolvedAt: new Date('2024-01-08') },
-  { name: 'Alan Dershowitz', slug: 'alan-dershowitz', burnAllocationPercent: 3.5, polymarketOdds: 26, status: 'confirmed', resolvedAt: new Date('2024-01-08') },
-  { name: 'Stephen Hawking', slug: 'stephen-hawking', burnAllocationPercent: 3.0, polymarketOdds: 20, status: 'confirmed', resolvedAt: new Date('2024-01-08') },
-  { name: 'Bill Gates', slug: 'bill-gates', burnAllocationPercent: 4.5, polymarketOdds: 32, status: 'confirmed', resolvedAt: new Date('2025-12-20') },
-  { name: 'Barack Obama', slug: 'barack-obama', burnAllocationPercent: 1.5, polymarketOdds: 10, status: 'confirmed', resolvedAt: new Date('2025-12-20') },
-  { name: 'Michael Jackson', slug: 'michael-jackson', burnAllocationPercent: 2.0, polymarketOdds: 12, status: 'confirmed', resolvedAt: new Date('2025-12-20') },
+  // Resolved YES - Burns EXECUTED on 2024-12-26
+  { name: 'Prince Andrew', slug: 'prince-andrew', burnAllocationPercent: 5.0, polymarketOdds: 36, status: 'executed', resolvedAt: new Date('2024-01-08'), executedAt: new Date('2024-12-26') },
+  { name: 'Bill Clinton', slug: 'bill-clinton', burnAllocationPercent: 3.5, polymarketOdds: 25, status: 'executed', resolvedAt: new Date('2024-01-08'), executedAt: new Date('2024-12-26') },
+  { name: 'Donald Trump', slug: 'donald-trump', burnAllocationPercent: 2.0, polymarketOdds: 15, status: 'executed', resolvedAt: new Date('2024-01-08'), executedAt: new Date('2024-12-26') },
+  { name: 'Alan Dershowitz', slug: 'alan-dershowitz', burnAllocationPercent: 3.5, polymarketOdds: 26, status: 'executed', resolvedAt: new Date('2024-01-08'), executedAt: new Date('2024-12-26') },
+  { name: 'Stephen Hawking', slug: 'stephen-hawking', burnAllocationPercent: 3.0, polymarketOdds: 20, status: 'executed', resolvedAt: new Date('2024-01-08'), executedAt: new Date('2024-12-26') },
+  { name: 'Bill Gates', slug: 'bill-gates', burnAllocationPercent: 4.5, polymarketOdds: 32, status: 'executed', resolvedAt: new Date('2025-12-20'), executedAt: new Date('2024-12-26') },
+  { name: 'Barack Obama', slug: 'barack-obama', burnAllocationPercent: 1.5, polymarketOdds: 10, status: 'executed', resolvedAt: new Date('2025-12-20'), executedAt: new Date('2024-12-26') },
+  { name: 'Michael Jackson', slug: 'michael-jackson', burnAllocationPercent: 2.0, polymarketOdds: 12, status: 'executed', resolvedAt: new Date('2025-12-20'), executedAt: new Date('2024-12-26') },
 ];
 // Subtotal: 25%
 

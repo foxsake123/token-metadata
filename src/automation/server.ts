@@ -9,6 +9,10 @@ import http from 'http';
 import { BurnScheduler } from './scheduler';
 import { TwitterClient } from './twitter';
 import { getStorageStats, getPendingBurns, getExecutedBurns } from './storage';
+import { ContentCalendar, TweetGenerator } from './social';
+import { EPSTEIN_ACTIVE_BURNS } from '../burn/config';
+import { DiscordWebhook } from './discord';
+import { getHolderCount, getDailyVolume, checkHolderMilestones, checkVolumeMilestones } from './holders';
 
 // Environment variable validation
 interface EnvConfig {
@@ -18,6 +22,7 @@ interface EnvConfig {
   SOLANA_RPC_URL: string;
   twitterConfigured: boolean;
   burnAuthorityConfigured: boolean;
+  discordConfigured: boolean;
 }
 
 function validateEnv(): EnvConfig {
@@ -37,6 +42,10 @@ function validateEnv(): EnvConfig {
     warnings.push('BURN_AUTHORITY_SECRET not set - burns require manual execution');
   }
 
+  if (!process.env.DISCORD_WEBHOOK_URL) {
+    warnings.push('DISCORD_WEBHOOK_URL not set - Discord notifications disabled');
+  }
+
   // Log warnings
   if (warnings.length > 0) {
     console.log('\n⚠️  Environment Warnings:');
@@ -51,6 +60,7 @@ function validateEnv(): EnvConfig {
     SOLANA_RPC_URL: process.env.SOLANA_RPC_URL || 'https://api.mainnet-beta.solana.com',
     twitterConfigured: !!(process.env.TWITTER_API_KEY && process.env.TWITTER_ACCESS_TOKEN),
     burnAuthorityConfigured: !!process.env.BURN_AUTHORITY_SECRET,
+    discordConfigured: !!process.env.DISCORD_WEBHOOK_URL,
   };
 }
 
@@ -61,6 +71,15 @@ const DRY_RUN = config.DRY_RUN;
 
 // Scheduler reference for health check
 let scheduler: BurnScheduler | null = null;
+
+// Content calendar for scheduled tweets
+const contentCalendar = new ContentCalendar();
+let lastTweetCheck = new Date();
+let tweetStats = {
+  totalPosted: 0,
+  lastPosted: null as Date | null,
+  lastError: null as string | null,
+};
 
 // Health check server with detailed status
 const server = http.createServer((req, res) => {
@@ -81,6 +100,7 @@ const server = http.createServer((req, res) => {
         dryRun: DRY_RUN,
         pollInterval: POLL_INTERVAL,
         twitterConfigured: config.twitterConfigured,
+        discordConfigured: config.discordConfigured,
         burnAuthorityConfigured: config.burnAuthorityConfigured,
         requiresConfirmation: scheduler?.requiresConfirmation ?? true,
       },
@@ -125,11 +145,170 @@ const server = http.createServer((req, res) => {
       })),
       count: pendingApprovals.length,
     }, null, 2));
+  } else if (req.url === '/tweets') {
+    // Upcoming scheduled tweets
+    const upcoming = contentCalendar.getUpcoming(10);
+    const due = contentCalendar.getDuePosts();
+
+    res.writeHead(200);
+    res.end(JSON.stringify({
+      stats: {
+        ...tweetStats,
+        lastCheck: lastTweetCheck.toISOString(),
+        dryRun: DRY_RUN,
+        twitterConfigured: config.twitterConfigured,
+      },
+      due: due.map(p => ({
+        content: p.content.substring(0, 100) + (p.content.length > 100 ? '...' : ''),
+        type: p.type,
+        scheduledFor: p.scheduledFor.toISOString(),
+      })),
+      upcoming: upcoming.map(p => ({
+        content: p.content.substring(0, 100) + (p.content.length > 100 ? '...' : ''),
+        type: p.type,
+        scheduledFor: p.scheduledFor.toISOString(),
+      })),
+    }, null, 2));
+  } else if (req.url === '/tweet/odds' && req.method === 'POST') {
+    // Manual trigger: Post odds update
+    handleManualTweet(res, 'odds');
+  } else if (req.url === '/tweet/engagement' && req.method === 'POST') {
+    // Manual trigger: Post engagement tweet
+    handleManualTweet(res, 'engagement');
+  } else if (req.url === '/tweet/fomo' && req.method === 'POST') {
+    // Manual trigger: Post FOMO tweet
+    handleManualTweet(res, 'fomo');
+  } else if (req.url === '/metrics') {
+    // Token metrics: holders, volume, milestones
+    handleMetrics(res);
   } else {
     res.writeHead(404);
     res.end(JSON.stringify({ error: 'Not found' }));
   }
 });
+
+// Twitter client (initialized in main)
+let twitter: TwitterClient | null = null;
+
+// Discord webhook client
+const discord = new DiscordWebhook();
+
+// Handle metrics endpoint
+async function handleMetrics(res: http.ServerResponse) {
+  const rpcUrl = process.env.SOLANA_RPC_URL || 'https://api.mainnet-beta.solana.com';
+
+  try {
+    const [holderData, volumeData] = await Promise.all([
+      getHolderCount(rpcUrl),
+      getDailyVolume(),
+    ]);
+
+    const holderMilestones = checkHolderMilestones(holderData.count);
+    const volumeMilestones = checkVolumeMilestones(volumeData.daily24h);
+
+    res.writeHead(200);
+    res.end(JSON.stringify({
+      holders: {
+        count: holderData.count,
+        fetchedAt: holderData.fetchedAt.toISOString(),
+        error: holderData.error,
+        milestones: holderMilestones,
+      },
+      volume: {
+        daily24h: volumeData.daily24h,
+        fetchedAt: volumeData.fetchedAt.toISOString(),
+        error: volumeData.error,
+        milestones: volumeMilestones,
+      },
+      note: 'Accurate metrics require Helius/Shyft/Birdeye API integration',
+    }, null, 2));
+  } catch (error) {
+    const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+    res.writeHead(500);
+    res.end(JSON.stringify({ error: errorMsg }));
+  }
+}
+
+// Handle manual tweet triggers
+async function handleManualTweet(res: http.ServerResponse, type: 'odds' | 'engagement' | 'fomo') {
+  if (!twitter) {
+    res.writeHead(500);
+    res.end(JSON.stringify({ error: 'Twitter client not initialized' }));
+    return;
+  }
+
+  try {
+    let tweet;
+    switch (type) {
+      case 'odds':
+        tweet = TweetGenerator.oddsUpdate(EPSTEIN_ACTIVE_BURNS);
+        break;
+      case 'engagement':
+        tweet = TweetGenerator.engagement(25, 19, EPSTEIN_ACTIVE_BURNS[0]?.name);
+        break;
+      case 'fomo':
+        tweet = TweetGenerator.fomo();
+        break;
+    }
+
+    const result = await twitter.postTweet(tweet.content);
+
+    if (result.success) {
+      tweetStats.totalPosted++;
+      tweetStats.lastPosted = new Date();
+      res.writeHead(200);
+      res.end(JSON.stringify({
+        success: true,
+        type,
+        tweetId: result.tweetId,
+        content: tweet.content,
+      }, null, 2));
+    } else {
+      tweetStats.lastError = result.error || 'Unknown error';
+      res.writeHead(500);
+      res.end(JSON.stringify({ error: result.error }));
+    }
+  } catch (error) {
+    const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+    tweetStats.lastError = errorMsg;
+    res.writeHead(500);
+    res.end(JSON.stringify({ error: errorMsg }));
+  }
+}
+
+// Check and post scheduled content
+async function checkScheduledContent() {
+  if (!twitter || !twitter.isConfigured()) {
+    return;
+  }
+
+  lastTweetCheck = new Date();
+  const duePosts = contentCalendar.getDuePosts();
+
+  for (const post of duePosts) {
+    try {
+      console.log(`📤 Posting scheduled ${post.type} tweet...`);
+      const result = await twitter.postTweet(post.content);
+
+      if (result.success) {
+        contentCalendar.markPosted(post);
+        tweetStats.totalPosted++;
+        tweetStats.lastPosted = new Date();
+        console.log(`✅ Tweet posted: ${result.tweetId}`);
+      } else {
+        tweetStats.lastError = result.error || 'Unknown error';
+        console.error(`❌ Tweet failed: ${result.error}`);
+      }
+
+      // Rate limit: wait 1 second between tweets
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+      tweetStats.lastError = errorMsg;
+      console.error(`❌ Tweet error: ${errorMsg}`);
+    }
+  }
+}
 
 // Start scheduler
 async function main() {
@@ -140,11 +319,22 @@ async function main() {
   console.log('');
 
   // Check Twitter config
-  const twitter = new TwitterClient(undefined, DRY_RUN);
+  twitter = new TwitterClient(undefined, DRY_RUN);
   if (twitter.isConfigured()) {
     console.log('✅ Twitter API configured');
   } else {
     console.log('⚠️  Twitter API not configured - tweets will be skipped');
+  }
+
+  // Generate content calendar
+  const scheduledPosts = contentCalendar.generateWeeklyContent();
+  console.log(`📅 Content calendar: ${scheduledPosts.length} posts scheduled for this week`);
+
+  // Check Discord config
+  if (discord.isConfigured()) {
+    console.log('✅ Discord webhook configured');
+  } else {
+    console.log('⚠️  Discord webhook not configured - Discord notifications disabled');
   }
 
   // Check Solana config
@@ -175,10 +365,16 @@ async function main() {
   scheduler.onBurnPendingApproval = async (target) => {
     console.log(`🔔 Burn pending approval: ${target.name} (${target.burnAllocationPercent}%)`);
     console.log(`   Use /approvals endpoint to view pending burns`);
+
+    // Send Discord notification
+    await discord.sendBurnPendingApproval(target.name, target.burnAllocationPercent);
   };
 
   scheduler.onBurnDetected = async (target) => {
     console.log(`🎯 Burn detected: ${target.name} (${target.burnAllocationPercent}%)`);
+
+    // Send Discord notification
+    await discord.sendBurnDetected(target.name, target.burnAllocationPercent);
 
     if (twitter.isConfigured() && !DRY_RUN) {
       const tweet = `🔥 BURN INCOMING 🔥
@@ -195,6 +391,9 @@ ${target.burnAllocationPercent}% burn executing...
 
   scheduler.onBurnExecuted = async (target, signature) => {
     console.log(`✅ Burn executed: ${target.name} - TX: ${signature}`);
+
+    // Send Discord notification
+    await discord.sendBurnExecuted(target.name, target.burnAllocationPercent, signature);
 
     if (twitter.isConfigured() && !DRY_RUN) {
       const tweet = `🔥 BURN EXECUTED 🔥
@@ -216,6 +415,15 @@ Supply reduced. Value increased.
   console.log('');
 
   scheduler.start(POLL_INTERVAL);
+
+  // Start scheduled content posting (check every 5 minutes)
+  const CONTENT_CHECK_INTERVAL = 5 * 60 * 1000; // 5 minutes
+  setInterval(() => {
+    checkScheduledContent().catch(err => {
+      console.error('❌ Content check error:', err);
+    });
+  }, CONTENT_CHECK_INTERVAL);
+  console.log(`📤 Scheduled tweet checker running every ${CONTENT_CHECK_INTERVAL / 1000 / 60} minutes`);
 
   // Keep alive
   process.on('SIGTERM', () => {

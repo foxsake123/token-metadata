@@ -13,6 +13,7 @@
 | Website | ✅ list-coin.com | Basic landing page with burn tracker |
 | Twitter | ⚠️ @ListDrop | Exists but low engagement |
 | Telegram | ✅ t.me/listdropofficial | Created, needs members |
+| Discord | ✅ discord.gg/s7MZfe8pRY | Created, needs members |
 | Automation Server | ✅ Railway | Running, monitoring Polymarket |
 | Tweet Templates | ✅ Built | social.ts has templates, not actively posting |
 | Liquidity | ❓ Unknown | Need to verify on Raydium |
@@ -237,7 +238,7 @@ Add to website:
 
 ### Week 1: Foundation
 - [x] Enable automated tweet scheduling
-- [ ] Create Discord server
+- [x] Create Discord server (discord.gg/s7MZfe8pRY)
 - [x] Create Telegram group (t.me/listdropofficial)
 - [x] Verify liquidity on Raydium ($3,700 - needs more)
 
@@ -300,4 +301,5 @@ Add to website:
 ### Social Links
 - **Twitter:** https://twitter.com/ListDrop
 - **Telegram:** https://t.me/listdropofficial
+- **Discord:** https://discord.gg/s7MZfe8pRY
 - **Website:** https://list-coin.com

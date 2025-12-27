@@ -32,20 +32,27 @@ export async function fetchPolymarketOdds(): Promise<Map<string, number>> {
   const oddsMap = new Map<string, number>();
 
   try {
-    const response = await fetch(`${POLYMARKET_API_BASE}/events/${EPSTEIN_EVENT_SLUG}`);
+    // API uses query parameter format: /events?slug=xxx
+    const response = await fetch(`${POLYMARKET_API_BASE}/events?slug=${EPSTEIN_EVENT_SLUG}`);
     if (!response.ok) {
       throw new Error(`Polymarket API error: ${response.status}`);
     }
 
     const data = await response.json();
 
-    for (const market of data.markets || []) {
-      const yesOutcome = market.outcomes?.find((o: PolymarketOutcome) => o.name === 'Yes');
-      if (yesOutcome) {
-        // Extract name from market question
-        const name = extractNameFromQuestion(market.question);
-        if (name) {
-          oddsMap.set(name.toLowerCase(), yesOutcome.price * 100);
+    // Response is an array of events
+    const events = Array.isArray(data) ? data : [data];
+
+    for (const event of events) {
+      for (const market of event.markets || []) {
+        // Get the Yes outcome price from outcomePrices array
+        const outcomePrices = market.outcomePrices ? JSON.parse(market.outcomePrices) : null;
+        if (outcomePrices && outcomePrices.length >= 1) {
+          const yesPrice = parseFloat(outcomePrices[0]) * 100; // Convert to percentage
+          const name = extractNameFromQuestion(market.question);
+          if (name) {
+            oddsMap.set(name.toLowerCase(), yesPrice);
+          }
         }
       }
     }
@@ -63,20 +70,28 @@ export async function checkConfirmedPredictions(): Promise<string[]> {
   const confirmed: string[] = [];
 
   try {
-    const response = await fetch(`${POLYMARKET_API_BASE}/events/${EPSTEIN_EVENT_SLUG}`);
+    // API uses query parameter format: /events?slug=xxx
+    const response = await fetch(`${POLYMARKET_API_BASE}/events?slug=${EPSTEIN_EVENT_SLUG}`);
     if (!response.ok) {
       throw new Error(`Polymarket API error: ${response.status}`);
     }
 
     const data = await response.json();
 
-    for (const market of data.markets || []) {
-      if (market.resolved) {
-        const yesOutcome = market.outcomes?.find((o: PolymarketOutcome) => o.name === 'Yes');
-        if (yesOutcome?.winner) {
-          const name = extractNameFromQuestion(market.question);
-          if (name) {
-            confirmed.push(name);
+    // Response is an array of events
+    const events = Array.isArray(data) ? data : [data];
+
+    for (const event of events) {
+      for (const market of event.markets || []) {
+        // Check if market is closed and resolved to Yes
+        if (market.closed) {
+          const outcomePrices = market.outcomePrices ? JSON.parse(market.outcomePrices) : null;
+          // If Yes price is 1.0 (100%), it resolved to Yes
+          if (outcomePrices && parseFloat(outcomePrices[0]) === 1) {
+            const name = extractNameFromQuestion(market.question);
+            if (name) {
+              confirmed.push(name);
+            }
           }
         }
       }

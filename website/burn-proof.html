@@ -1,0 +1,297 @@
+<!--
+  LIST Token Burn Proof Widget
+  Embed this in TypeDream using: /embed > Code
+
+  Shows all executed burns with Solscan transaction links
+-->
+
+<style>
+  .burn-proof {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border-radius: 16px;
+    padding: 24px;
+    color: white;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .burn-proof h2 {
+    margin: 0 0 8px 0;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .burn-proof-subtitle {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 14px;
+    margin-bottom: 24px;
+  }
+
+  .burn-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .summary-card {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+  }
+
+  .summary-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: #ff6b35;
+  }
+
+  .summary-label {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    margin-top: 4px;
+  }
+
+  .burn-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .burn-proof-item {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .burn-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .burn-check {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, #4ade80, #22c55e);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+  }
+
+  .burn-name {
+    font-weight: 600;
+    font-size: 16px;
+  }
+
+  .burn-details {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .burn-percent {
+    background: rgba(255, 107, 53, 0.2);
+    color: #ff6b35;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  .burn-amount {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+  }
+
+  .burn-tx {
+    background: rgba(168, 85, 247, 0.2);
+    color: #a855f7;
+    padding: 8px 16px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    transition: background 0.2s;
+  }
+
+  .burn-tx:hover {
+    background: rgba(168, 85, 247, 0.4);
+  }
+
+  .burn-date {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 12px;
+    width: 100%;
+    text-align: right;
+    margin-top: -4px;
+  }
+
+  .verification-note {
+    margin-top: 24px;
+    padding: 16px;
+    background: rgba(74, 222, 128, 0.1);
+    border-radius: 12px;
+    border-left: 4px solid #4ade80;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  @media (max-width: 600px) {
+    .burn-summary {
+      grid-template-columns: 1fr;
+    }
+    .burn-proof-item {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .burn-details {
+      width: 100%;
+      justify-content: space-between;
+    }
+  }
+</style>
+
+<div class="burn-proof">
+  <h2>🔥 Burn Proof</h2>
+  <p class="burn-proof-subtitle">All burns verified on-chain via Solana blockchain</p>
+
+  <div class="burn-summary">
+    <div class="summary-card">
+      <div class="summary-value">25%</div>
+      <div class="summary-label">Total Burned</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-value">2.46M</div>
+      <div class="summary-label">Tokens Destroyed</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-value">8</div>
+      <div class="summary-label">Burns Executed</div>
+    </div>
+  </div>
+
+  <div class="burn-list">
+    <div class="burn-proof-item">
+      <div class="burn-info">
+        <div class="burn-check">✓</div>
+        <span class="burn-name">Prince Andrew</span>
+      </div>
+      <div class="burn-details">
+        <span class="burn-percent">5.0%</span>
+        <span class="burn-amount">492,461 LIST</span>
+        <a href="https://solscan.io/tx/2LP6u8UKGf7xc5Dj6SnFDLcB25txuqc992yekAD1HWB84ZHS1AddfK3hkywCUT3Lj3idLM9AhMSm4KA7TMM6pWk8" target="_blank" class="burn-tx">View TX ↗</a>
+      </div>
+      <div class="burn-date">Executed: Dec 26, 2024</div>
+    </div>
+
+    <div class="burn-proof-item">
+      <div class="burn-info">
+        <div class="burn-check">✓</div>
+        <span class="burn-name">Bill Gates</span>
+      </div>
+      <div class="burn-details">
+        <span class="burn-percent">4.5%</span>
+        <span class="burn-amount">443,215 LIST</span>
+        <a href="https://solscan.io/tx/2LP6u8UKGf7xc5Dj6SnFDLcB25txuqc992yekAD1HWB84ZHS1AddfK3hkywCUT3Lj3idLM9AhMSm4KA7TMM6pWk8" target="_blank" class="burn-tx">View TX ↗</a>
+      </div>
+      <div class="burn-date">Executed: Dec 26, 2024</div>
+    </div>
+
+    <div class="burn-proof-item">
+      <div class="burn-info">
+        <div class="burn-check">✓</div>
+        <span class="burn-name">Alan Dershowitz</span>
+      </div>
+      <div class="burn-details">
+        <span class="burn-percent">3.5%</span>
+        <span class="burn-amount">344,723 LIST</span>
+        <a href="https://solscan.io/tx/2LP6u8UKGf7xc5Dj6SnFDLcB25txuqc992yekAD1HWB84ZHS1AddfK3hkywCUT3Lj3idLM9AhMSm4KA7TMM6pWk8" target="_blank" class="burn-tx">View TX ↗</a>
+      </div>
+      <div class="burn-date">Executed: Dec 26, 2024</div>
+    </div>
+
+    <div class="burn-proof-item">
+      <div class="burn-info">
+        <div class="burn-check">✓</div>
+        <span class="burn-name">Bill Clinton</span>
+      </div>
+      <div class="burn-details">
+        <span class="burn-percent">3.5%</span>
+        <span class="burn-amount">344,723 LIST</span>
+        <a href="https://solscan.io/tx/2LP6u8UKGf7xc5Dj6SnFDLcB25txuqc992yekAD1HWB84ZHS1AddfK3hkywCUT3Lj3idLM9AhMSm4KA7TMM6pWk8" target="_blank" class="burn-tx">View TX ↗</a>
+      </div>
+      <div class="burn-date">Executed: Dec 26, 2024</div>
+    </div>
+
+    <div class="burn-proof-item">
+      <div class="burn-info">
+        <div class="burn-check">✓</div>
+        <span class="burn-name">Stephen Hawking</span>
+      </div>
+      <div class="burn-details">
+        <span class="burn-percent">3.0%</span>
+        <span class="burn-amount">295,476 LIST</span>
+        <a href="https://solscan.io/tx/2LP6u8UKGf7xc5Dj6SnFDLcB25txuqc992yekAD1HWB84ZHS1AddfK3hkywCUT3Lj3idLM9AhMSm4KA7TMM6pWk8" target="_blank" class="burn-tx">View TX ↗</a>
+      </div>
+      <div class="burn-date">Executed: Dec 26, 2024</div>
+    </div>
+
+    <div class="burn-proof-item">
+      <div class="burn-info">
+        <div class="burn-check">✓</div>
+        <span class="burn-name">Donald Trump</span>
+      </div>
+      <div class="burn-details">
+        <span class="burn-percent">2.0%</span>
+        <span class="burn-amount">196,984 LIST</span>
+        <a href="https://solscan.io/tx/2LP6u8UKGf7xc5Dj6SnFDLcB25txuqc992yekAD1HWB84ZHS1AddfK3hkywCUT3Lj3idLM9AhMSm4KA7TMM6pWk8" target="_blank" class="burn-tx">View TX ↗</a>
+      </div>
+      <div class="burn-date">Executed: Dec 26, 2024</div>
+    </div>
+
+    <div class="burn-proof-item">
+      <div class="burn-info">
+        <div class="burn-check">✓</div>
+        <span class="burn-name">Michael Jackson</span>
+      </div>
+      <div class="burn-details">
+        <span class="burn-percent">2.0%</span>
+        <span class="burn-amount">196,984 LIST</span>
+        <a href="https://solscan.io/tx/xb43t1h2JfR7o45pePLKwgwKeV9Esjqcm9NoXszsM2mNF43poJ5TvNKrjPC88w1e4Z8L7St18CNhtC8vksNQybH" target="_blank" class="burn-tx">View TX ↗</a>
+      </div>
+      <div class="burn-date">Executed: Dec 26, 2024</div>
+    </div>
+
+    <div class="burn-proof-item">
+      <div class="burn-info">
+        <div class="burn-check">✓</div>
+        <span class="burn-name">Barack Obama</span>
+      </div>
+      <div class="burn-details">
+        <span class="burn-percent">1.5%</span>
+        <span class="burn-amount">147,738 LIST</span>
+        <a href="https://solscan.io/tx/3CaoqgaSEc57aWQBN9KH8ARBFTWMosASHe9ZXGrRcQz9SLbMxEBA4yD2nuxwsjwPrvJj8RsTfZos8MVp3AzXCcou" target="_blank" class="burn-tx">View TX ↗</a>
+      </div>
+      <div class="burn-date">Executed: Dec 26, 2024</div>
+    </div>
+  </div>
+
+  <div class="verification-note">
+    <strong>✓ Verified On-Chain</strong><br>
+    All burns are permanent and irreversible. Click any "View TX" link to verify on Solscan.
+    <br><br>
+    <strong>Supply:</strong> 9,849,232 → 7,386,928 LIST (-25%)
+  </div>
+</div>

@@ -286,10 +286,18 @@ export class TwitterClient {
 // =============================================================================
 
 let defaultClient: TwitterClient | null = null;
+let defaultClientDryRun: boolean | null = null;
 
 export function getTwitterClient(dryRun = false): TwitterClient {
+  // Recreate client if dryRun mode changes
+  if (defaultClient && defaultClientDryRun !== dryRun) {
+    console.warn(`⚠️ TwitterClient dryRun mode changed from ${defaultClientDryRun} to ${dryRun}, recreating client`);
+    defaultClient = null;
+  }
+
   if (!defaultClient) {
     defaultClient = new TwitterClient(undefined, dryRun);
+    defaultClientDryRun = dryRun;
   }
   return defaultClient;
 }

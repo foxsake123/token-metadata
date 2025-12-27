@@ -9,9 +9,54 @@ import http from 'http';
 import { BurnScheduler } from './scheduler';
 import { TwitterClient } from './twitter';
 
-const PORT = process.env.PORT || 3000;
-const POLL_INTERVAL = parseInt(process.env.POLL_INTERVAL || '60000', 10);
-const DRY_RUN = process.env.DRY_RUN === 'true';
+// Environment variable validation
+interface EnvConfig {
+  PORT: number;
+  POLL_INTERVAL: number;
+  DRY_RUN: boolean;
+  SOLANA_RPC_URL: string;
+  twitterConfigured: boolean;
+  burnAuthorityConfigured: boolean;
+}
+
+function validateEnv(): EnvConfig {
+  const warnings: string[] = [];
+
+  // Required for production burns
+  if (!process.env.SOLANA_RPC_URL) {
+    warnings.push('SOLANA_RPC_URL not set - using public RPC (rate limited)');
+  }
+
+  // Optional but recommended
+  if (!process.env.TWITTER_API_KEY || !process.env.TWITTER_ACCESS_TOKEN) {
+    warnings.push('Twitter API credentials not fully configured');
+  }
+
+  if (!process.env.BURN_AUTHORITY_SECRET) {
+    warnings.push('BURN_AUTHORITY_SECRET not set - burns require manual execution');
+  }
+
+  // Log warnings
+  if (warnings.length > 0) {
+    console.log('\n⚠️  Environment Warnings:');
+    warnings.forEach(w => console.log(`   - ${w}`));
+    console.log('');
+  }
+
+  return {
+    PORT: parseInt(process.env.PORT || '3000', 10),
+    POLL_INTERVAL: parseInt(process.env.POLL_INTERVAL || '60000', 10),
+    DRY_RUN: process.env.DRY_RUN === 'true',
+    SOLANA_RPC_URL: process.env.SOLANA_RPC_URL || 'https://api.mainnet-beta.solana.com',
+    twitterConfigured: !!(process.env.TWITTER_API_KEY && process.env.TWITTER_ACCESS_TOKEN),
+    burnAuthorityConfigured: !!process.env.BURN_AUTHORITY_SECRET,
+  };
+}
+
+const config = validateEnv();
+const PORT = config.PORT;
+const POLL_INTERVAL = config.POLL_INTERVAL;
+const DRY_RUN = config.DRY_RUN;
 
 // Health check server
 const server = http.createServer((req, res) => {

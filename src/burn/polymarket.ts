@@ -10,6 +10,49 @@ import { BurnTarget } from './config';
 const POLYMARKET_API_BASE = 'https://gamma-api.polymarket.com';
 const EPSTEIN_EVENT_SLUG = 'who-will-be-named-in-newly-released-epstein-files';
 
+// Retry configuration
+const MAX_RETRIES = 3;
+const INITIAL_DELAY_MS = 1000;
+
+/**
+ * Fetch with exponential backoff retry
+ */
+async function fetchWithRetry(
+  url: string,
+  options: RequestInit = {},
+  retries = MAX_RETRIES
+): Promise<Response> {
+  let lastError: Error | null = null;
+
+  for (let attempt = 0; attempt < retries; attempt++) {
+    try {
+      const response = await fetch(url, options);
+
+      // Don't retry on client errors (4xx) except 429 (rate limit)
+      if (response.status >= 400 && response.status < 500 && response.status !== 429) {
+        return response;
+      }
+
+      // Retry on server errors (5xx) or rate limits
+      if (response.status >= 500 || response.status === 429) {
+        const delay = INITIAL_DELAY_MS * Math.pow(2, attempt);
+        console.log(`⏳ API returned ${response.status}, retrying in ${delay}ms (attempt ${attempt + 1}/${retries})`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+        continue;
+      }
+
+      return response;
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error(String(error));
+      const delay = INITIAL_DELAY_MS * Math.pow(2, attempt);
+      console.log(`⏳ Network error, retrying in ${delay}ms (attempt ${attempt + 1}/${retries}): ${lastError.message}`);
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+
+  throw lastError || new Error('Max retries exceeded');
+}
+
 export interface PolymarketOutcome {
   name: string;
   price: number; // 0-1 representing odds
@@ -25,6 +68,18 @@ export interface PolymarketMarket {
   resolutionDate?: string;
 }
 
+// Custom error class for Polymarket API errors
+export class PolymarketError extends Error {
+  constructor(
+    message: string,
+    public readonly statusCode?: number,
+    public readonly isRetryable: boolean = false
+  ) {
+    super(message);
+    this.name = 'PolymarketError';
+  }
+}
+
 /**
  * Fetch current odds for all Epstein list predictions
  */
@@ -33,7 +88,7 @@ export async function fetchPolymarketOdds(): Promise<Map<string, number>> {
 
   try {
     // API uses query parameter format: /events?slug=xxx
-    const response = await fetch(`${POLYMARKET_API_BASE}/events?slug=${EPSTEIN_EVENT_SLUG}`);
+    const response = await fetchWithRetry(`${POLYMARKET_API_BASE}/events?slug=${EPSTEIN_EVENT_SLUG}`);
     if (!response.ok) {
       throw new Error(`Polymarket API error: ${response.status}`);
     }
@@ -57,7 +112,14 @@ export async function fetchPolymarketOdds(): Promise<Map<string, number>> {
       }
     }
   } catch (error) {
-    console.error('Failed to fetch Polymarket odds:', error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error(`❌ Failed to fetch Polymarket odds: ${errorMessage}`);
+    // Re-throw as PolymarketError so callers can handle appropriately
+    throw new PolymarketError(
+      `Failed to fetch odds: ${errorMessage}`,
+      undefined,
+      error instanceof Error && error.message.includes('network')
+    );
   }
 
   return oddsMap;
@@ -71,7 +133,7 @@ export async function checkConfirmedPredictions(): Promise<string[]> {
 
   try {
     // API uses query parameter format: /events?slug=xxx
-    const response = await fetch(`${POLYMARKET_API_BASE}/events?slug=${EPSTEIN_EVENT_SLUG}`);
+    const response = await fetchWithRetry(`${POLYMARKET_API_BASE}/events?slug=${EPSTEIN_EVENT_SLUG}`);
     if (!response.ok) {
       throw new Error(`Polymarket API error: ${response.status}`);
     }
@@ -97,7 +159,14 @@ export async function checkConfirmedPredictions(): Promise<string[]> {
       }
     }
   } catch (error) {
-    console.error('Failed to check Polymarket resolutions:', error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error(`❌ Failed to check Polymarket resolutions: ${errorMessage}`);
+    // Re-throw so callers know something went wrong
+    throw new PolymarketError(
+      `Failed to check resolutions: ${errorMessage}`,
+      undefined,
+      error instanceof Error && error.message.includes('network')
+    );
   }
 
   return confirmed;

@@ -96,7 +96,15 @@ export class BurnScheduler {
    * Check Polymarket for newly resolved predictions
    */
   async checkPolymarketResolutions(): Promise<string[]> {
-    const confirmed = await checkConfirmedPredictions();
+    let confirmed: string[];
+    try {
+      confirmed = await checkConfirmedPredictions();
+    } catch (error) {
+      // Log but don't crash - we'll retry on next scheduled check
+      console.error(`⚠️ Polymarket check failed, will retry: ${error instanceof Error ? error.message : error}`);
+      return [];
+    }
+
     const newlyConfirmed: string[] = [];
 
     for (const name of confirmed) {
@@ -104,9 +112,10 @@ export class BurnScheduler {
         .find((t: BurnTarget) => t.name.toLowerCase() === name.toLowerCase() && t.status === 'pending');
 
       if (target && !this.isAlreadyScheduled(target.slug)) {
-        target.status = 'confirmed';
+        // Create a copy with updated status to avoid mutating imported constants
+        const confirmedTarget: BurnTarget = { ...target, status: 'confirmed' };
         const burn: ScheduledBurn = {
-          target,
+          target: confirmedTarget,
           scheduledFor: new Date(),
           executed: false,
         };
@@ -114,7 +123,7 @@ export class BurnScheduler {
         newlyConfirmed.push(name);
 
         console.log(`🆕 New confirmation: ${name} - scheduling burn`);
-        await this.onBurnDetected?.(target);
+        await this.onBurnDetected?.(confirmedTarget);
       }
     }
 

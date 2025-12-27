@@ -3,7 +3,8 @@
  *
  * "The more names drop. The more $LIST pops."
  *
- * Total Max Burn: 44% (Epstein) + 15% (Diddy) = 59%
+ * Total Max Burn: 49% (Epstein) + 15% (Diddy) = 64%
+ * Conservative - not all names will confirm
  */
 
 export const LIST_TOKEN_MINT = '5oKiBTTUutgk95g4MEgxUHtWJ9n21QXPSAusL6ic8KgM';
@@ -55,24 +56,31 @@ export const EPSTEIN_RESOLVED_BURNS: BurnTarget[] = [
 // Current active market ending Dec 31, 2025
 // =============================================================================
 export const EPSTEIN_ACTIVE_BURNS: BurnTarget[] = [
-  // High probability (>20%)
-  { name: 'Tony Blair', slug: 'tony-blair', burnAllocationPercent: 2.5, polymarketOdds: 27, status: 'pending' },
-  { name: 'Al Gore', slug: 'al-gore', burnAllocationPercent: 2.0, polymarketOdds: 20, status: 'pending' },
+  // Higher probability (>12%) - Updated odds Dec 27, 2024
+  { name: 'Henry Kissinger', slug: 'henry-kissinger', burnAllocationPercent: 1.0, polymarketOdds: 15, status: 'pending' },
+  { name: 'Tony Blair', slug: 'tony-blair', burnAllocationPercent: 2.5, polymarketOdds: 13, status: 'pending' },
+  { name: 'Jamie Dimon', slug: 'jamie-dimon', burnAllocationPercent: 1.5, polymarketOdds: 13, status: 'pending' },
+  { name: 'Sean Combs', slug: 'sean-combs', burnAllocationPercent: 1.0, polymarketOdds: 13, status: 'pending' },
+  { name: 'Ellen DeGeneres', slug: 'ellen-degeneres', burnAllocationPercent: 1.0, polymarketOdds: 13, status: 'pending' },
+  { name: 'Oprah Winfrey', slug: 'oprah-winfrey', burnAllocationPercent: 1.5, polymarketOdds: 12, status: 'pending' },
 
-  // Medium probability (10-20%)
-  { name: 'Kirsten Gillibrand', slug: 'kirsten-gillibrand', burnAllocationPercent: 1.5, polymarketOdds: 19, status: 'pending' },
-  { name: 'Jamie Dimon', slug: 'jamie-dimon', burnAllocationPercent: 1.5, polymarketOdds: 18, status: 'pending' },
-  { name: 'Oprah Winfrey', slug: 'oprah-winfrey', burnAllocationPercent: 1.5, polymarketOdds: 16, status: 'pending' },
-  { name: 'Ellen DeGeneres', slug: 'ellen-degeneres', burnAllocationPercent: 1.0, polymarketOdds: 14, status: 'pending' },
-  { name: 'Anderson Cooper', slug: 'anderson-cooper', burnAllocationPercent: 1.0, polymarketOdds: 13, status: 'pending' },
-  { name: 'Sean Combs', slug: 'sean-combs', burnAllocationPercent: 1.0, polymarketOdds: 12, status: 'pending' },
-  { name: 'Henry Kissinger', slug: 'henry-kissinger', burnAllocationPercent: 1.0, polymarketOdds: 12, status: 'pending' },
-  { name: 'Jimmy Kimmel', slug: 'jimmy-kimmel', burnAllocationPercent: 1.0, polymarketOdds: 10, status: 'pending' },
+  // Medium probability (10-12%)
+  { name: 'Anderson Cooper', slug: 'anderson-cooper', burnAllocationPercent: 1.0, polymarketOdds: 11, status: 'pending' },
+  { name: 'Kirsten Gillibrand', slug: 'kirsten-gillibrand', burnAllocationPercent: 1.5, polymarketOdds: 11, status: 'pending' },
+  { name: 'Al Gore', slug: 'al-gore', burnAllocationPercent: 2.0, polymarketOdds: 10, status: 'pending' },
+  { name: 'Jimmy Kimmel', slug: 'jimmy-kimmel', burnAllocationPercent: 1.0, polymarketOdds: 9, status: 'pending' },
 
   // Lower probability (<10%)
-  { name: 'Tom Hanks', slug: 'tom-hanks', burnAllocationPercent: 0.5, polymarketOdds: 5, status: 'pending' },
+  { name: 'Tom Hanks', slug: 'tom-hanks', burnAllocationPercent: 0.5, polymarketOdds: 6, status: 'pending' },
+  { name: 'Quentin Tarantino', slug: 'quentin-tarantino', burnAllocationPercent: 1.0, polymarketOdds: 9, status: 'pending' },
+  { name: 'Robert Downey Jr.', slug: 'robert-downey-jr', burnAllocationPercent: 1.25, polymarketOdds: 7, status: 'pending' },
+
+  // New names added Dec 27, 2024
+  { name: 'David Koch', slug: 'david-koch', burnAllocationPercent: 1.0, polymarketOdds: 14, status: 'pending' },
+  { name: 'Piers Morgan', slug: 'piers-morgan', burnAllocationPercent: 0.75, polymarketOdds: 12, status: 'pending' },
+  { name: 'Rachel Maddow', slug: 'rachel-maddow', burnAllocationPercent: 0.75, polymarketOdds: 12, status: 'pending' },
 ];
-// Subtotal: 14.5%
+// Subtotal: 19.25%
 
 // =============================================================================
 // EVENT 1: EPSTEIN - COMMUNITY MILESTONES
@@ -134,7 +142,7 @@ export const BURN_EVENTS: BurnEvent[] = [
     id: 'epstein-list',
     name: 'Epstein List Revelations',
     description: 'Burns triggered by confirmed names on the Epstein list',
-    maxBurnPercent: 44,
+    maxBurnPercent: 49,
     targets: [...EPSTEIN_RESOLVED_BURNS, ...EPSTEIN_ACTIVE_BURNS, ...EPSTEIN_MILESTONES],
     endDate: new Date('2025-12-31'),
     active: true,

@@ -12,6 +12,7 @@
 | Burns Executed | ✅ 25% burned | 8 names confirmed, 2.46M tokens destroyed |
 | Website | ✅ list-coin.com | Basic landing page with burn tracker |
 | Twitter | ⚠️ @ListDrop | Exists but low engagement |
+| Telegram | ✅ t.me/listdropofficial | Created, needs members |
 | Automation Server | ✅ Railway | Running, monitoring Polymarket |
 | Tweet Templates | ✅ Built | social.ts has templates, not actively posting |
 | Liquidity | ❓ Unknown | Need to verify on Raydium |
@@ -105,6 +106,7 @@ Structure:
 ```
 
 ### Create Telegram Group
+- ✅ **Created:** https://t.me/listdropofficial
 - Faster for mobile users
 - Bot for price alerts
 - Quick announcements
@@ -234,10 +236,10 @@ Add to website:
 ## Implementation Roadmap
 
 ### Week 1: Foundation
-- [ ] Enable automated tweet scheduling
+- [x] Enable automated tweet scheduling
 - [ ] Create Discord server
-- [ ] Create Telegram group
-- [ ] Verify/improve liquidity on Raydium
+- [x] Create Telegram group (t.me/listdropofficial)
+- [x] Verify liquidity on Raydium ($3,700 - needs more)
 
 ### Week 2: Content
 - [ ] Create 10 meme templates
@@ -294,3 +296,8 @@ Add to website:
 - [Raydium Pool](https://raydium.io/liquidity-pools/?token=5oKiBTTUutgk95g4MEgxUHtWJ9n21QXPSAusL6ic8KgM)
 - [Solscan Token](https://solscan.io/token/5oKiBTTUutgk95g4MEgxUHtWJ9n21QXPSAusL6ic8KgM)
 - [Polymarket Epstein](https://polymarket.com/event/who-will-be-named-in-newly-released-epstein-files)
+
+### Social Links
+- **Twitter:** https://twitter.com/ListDrop
+- **Telegram:** https://t.me/listdropofficial
+- **Website:** https://list-coin.com

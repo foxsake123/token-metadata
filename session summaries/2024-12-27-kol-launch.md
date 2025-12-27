@@ -59,3 +59,6 @@
 2. Set up marketing wallet
 3. More KOL outreach
 4. Add liquidity if possible
+5. Create Burn Bingo cards (viral mechanic)
+6. Build Burn Certificate Generator
+7. Set up weekly prediction contest in Discord/Telegram

@@ -183,3 +183,13 @@ export function getEventById(id: string): BurnEvent | undefined {
 export function formatBurnAmount(amount: bigint): string {
   return (Number(amount) / 10 ** DECIMALS).toLocaleString();
 }
+
+export function getAllTargets(): BurnTarget[] {
+  return [
+    ...EPSTEIN_RESOLVED_BURNS,
+    ...EPSTEIN_ACTIVE_BURNS,
+    ...EPSTEIN_MILESTONES,
+    ...DIDDY_SENTENCE_BURNS,
+    ...DIDDY_BONUS_BURNS,
+  ];
+}

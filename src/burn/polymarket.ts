@@ -5,7 +5,7 @@
  * to determine when burns should be triggered.
  */
 
-import { BurnTarget, BURN_TARGETS } from './config';
+import { BurnTarget } from './config';
 
 const POLYMARKET_API_BASE = 'https://gamma-api.polymarket.com';
 const EPSTEIN_EVENT_SLUG = 'who-will-be-named-in-newly-released-epstein-files';
@@ -91,7 +91,7 @@ export async function checkConfirmedPredictions(): Promise<string[]> {
 /**
  * Get burn targets that are ready to execute (confirmed on Polymarket but not yet burned)
  */
-export async function getPendingBurns(targets: BurnTarget[]): Promise<BurnTarget[]> {
+export async function getConfirmedBurns(targets: BurnTarget[]): Promise<BurnTarget[]> {
   const confirmed = await checkConfirmedPredictions();
   const confirmedLower = confirmed.map(n => n.toLowerCase());
 

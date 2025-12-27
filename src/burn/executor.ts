@@ -24,7 +24,7 @@ import {
   calculateBurnAmount,
   getAllTargets,
 } from './config';
-import { getPendingBurns } from './polymarket';
+import { getConfirmedBurns } from './polymarket';
 
 export interface BurnResult {
   target: BurnTarget;
@@ -50,7 +50,7 @@ export class ListBurnExecutor {
    */
   async executePendingBurns(): Promise<BurnResult[]> {
     const targets = getAllTargets();
-    const pendingBurns = await getPendingBurns(targets);
+    const pendingBurns = await getConfirmedBurns(targets);
 
     if (pendingBurns.length === 0) {
       console.log('No pending burns to execute');
@@ -134,16 +134,16 @@ export class ListBurnExecutor {
     remainingAllocation: number;
   }> {
     const targets = getAllTargets();
-    const confirmed = targets.filter(t => t.status === 'confirmed');
-    const pending = targets.filter(t => t.status === 'pending');
+    const confirmed = targets.filter((t: BurnTarget) => t.status === 'confirmed');
+    const pending = targets.filter((t: BurnTarget) => t.status === 'pending');
 
     const totalBurned = confirmed.reduce(
-      (sum, t) => sum + calculateBurnAmount(t),
+      (sum: bigint, t: BurnTarget) => sum + calculateBurnAmount(t),
       BigInt(0)
     );
 
     const remainingAllocation = pending.reduce(
-      (sum, t) => sum + t.burnAllocationPercent,
+      (sum: number, t: BurnTarget) => sum + t.burnAllocationPercent,
       0
     );
 

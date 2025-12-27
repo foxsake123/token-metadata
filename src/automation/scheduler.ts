@@ -35,13 +35,13 @@ export interface MilestoneCheck {
 
 export class BurnScheduler {
   private scheduledBurns: ScheduledBurn[] = [];
-  private checkInterval: NodeJS.Timer | null = null;
-  private onBurnExecuted?: (burn: ScheduledBurn) => void;
-  private onBurnScheduled?: (burn: ScheduledBurn) => void;
+  private checkInterval: ReturnType<typeof setInterval> | null = null;
+  public onBurnDetected?: (target: BurnTarget) => Promise<void>;
+  public onBurnExecuted?: (target: BurnTarget, signature: string) => Promise<void>;
 
   constructor(
     private rpcUrl: string,
-    private burnAuthoritySecret?: Uint8Array
+    private _burnAuthoritySecret?: Uint8Array
   ) {}
 
   /**
@@ -87,7 +87,7 @@ export class BurnScheduler {
         scheduled.push(burn);
 
         console.log(`📋 Scheduled owed burn: ${target.name} (${target.burnAllocationPercent}%)`);
-        this.onBurnScheduled?.(burn);
+        await this.onBurnDetected?.(target);
       }
     }
 
@@ -103,7 +103,7 @@ export class BurnScheduler {
 
     for (const name of confirmed) {
       const target = [...EPSTEIN_ACTIVE_BURNS, ...DIDDY_SENTENCE_BURNS, ...DIDDY_BONUS_BURNS]
-        .find(t => t.name.toLowerCase() === name.toLowerCase() && t.status === 'pending');
+        .find((t: BurnTarget) => t.name.toLowerCase() === name.toLowerCase() && t.status === 'pending');
 
       if (target && !this.isAlreadyScheduled(target.slug)) {
         target.status = 'confirmed';
@@ -116,7 +116,7 @@ export class BurnScheduler {
         newlyConfirmed.push(name);
 
         console.log(`🆕 New confirmation: ${name} - scheduling burn`);
-        this.onBurnScheduled?.(burn);
+        await this.onBurnDetected?.(target);
       }
     }
 
@@ -164,7 +164,7 @@ export class BurnScheduler {
         burn.target.status = 'executed';
 
         executed.push(burn);
-        this.onBurnExecuted?.(burn);
+        await this.onBurnExecuted?.(burn.target, burn.txSignature!);
 
         console.log(`✅ Burn executed: ${burn.target.name}`);
       } catch (error) {
@@ -192,20 +192,9 @@ export class BurnScheduler {
       owed,
       scheduled: this.scheduledBurns.filter(b => !b.executed),
       executed,
-      totalOwedPercent: owed.reduce((sum, t) => sum + t.burnAllocationPercent, 0),
-      totalExecutedPercent: executed.reduce((sum, b) => sum + b.target.burnAllocationPercent, 0),
+      totalOwedPercent: owed.reduce((sum: number, t: BurnTarget) => sum + t.burnAllocationPercent, 0),
+      totalExecutedPercent: executed.reduce((sum: number, b: ScheduledBurn) => sum + b.target.burnAllocationPercent, 0),
     };
-  }
-
-  /**
-   * Register callbacks
-   */
-  onBurnExecutedCallback(fn: (burn: ScheduledBurn) => void) {
-    this.onBurnExecuted = fn;
-  }
-
-  onBurnScheduledCallback(fn: (burn: ScheduledBurn) => void) {
-    this.onBurnScheduled = fn;
   }
 
   private isAlreadyScheduled(slug: string): boolean {
@@ -251,18 +240,18 @@ export async function startScheduler() {
   );
 
   // Set up callbacks for social media integration
-  scheduler.onBurnExecutedCallback((burn) => {
+  scheduler.onBurnExecuted = async (target: BurnTarget, signature: string) => {
     console.log(`\n🐦 TWEET: $LIST BURN EXECUTED!`);
-    console.log(`   ${burn.target.name} confirmed on the list!`);
-    console.log(`   ${burn.target.burnAllocationPercent}% of supply BURNED 🔥`);
-    console.log(`   TX: ${burn.txSignature}`);
-  });
+    console.log(`   ${target.name} confirmed on the list!`);
+    console.log(`   ${target.burnAllocationPercent}% of supply BURNED 🔥`);
+    console.log(`   TX: ${signature}`);
+  };
 
-  scheduler.onBurnScheduledCallback((burn) => {
+  scheduler.onBurnDetected = async (target: BurnTarget) => {
     console.log(`\n🐦 TWEET: BURN INCOMING!`);
-    console.log(`   ${burn.target.name} just confirmed!`);
-    console.log(`   ${burn.target.burnAllocationPercent}% burn scheduled...`);
-  });
+    console.log(`   ${target.name} just confirmed!`);
+    console.log(`   ${target.burnAllocationPercent}% burn scheduled...`);
+  };
 
   // Start the scheduler
   scheduler.start(60000); // Check every minute

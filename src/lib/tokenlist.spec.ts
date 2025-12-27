@@ -25,7 +25,7 @@ test('Token list can exclude by a tag', async (t) => {
     .excludeByTag('nft')
     .getList();
 
-  t.false(list.some((item) => item.tags === ['nft']));
+  t.false(list.some((item) => item.tags?.includes('nft')));
 });
 
 test('Token list can exclude by a chain', async (t) => {

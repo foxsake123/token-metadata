@@ -15,6 +15,15 @@ import {
   formatBurnAmount,
   getTotalOwedBurnPercent,
 } from '../burn/config';
+import {
+  StoredPost,
+  saveScheduledPosts,
+  loadScheduledPosts,
+  needsCalendarRegeneration,
+  markPostAsPosted,
+  getDueScheduledPosts,
+  getUpcomingScheduledPosts,
+} from './storage';
 
 // =============================================================================
 // TWEET TEMPLATES
@@ -234,19 +243,65 @@ export class TweetGenerator {
 // =============================================================================
 
 export interface ScheduledPost {
+  id?: string;
   content: string;
   scheduledFor: Date;
   type: string;
   posted: boolean;
 }
 
+function generatePostId(): string {
+  return `post_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+}
+
 export class ContentCalendar {
   private posts: ScheduledPost[] = [];
 
+  constructor() {
+    // Load existing posts from storage on initialization
+    this.loadFromStorage();
+  }
+
   /**
-   * Generate a week's worth of content
+   * Load posts from persistent storage
+   */
+  private loadFromStorage(): void {
+    const stored = loadScheduledPosts();
+    this.posts = stored.map(p => ({
+      id: p.id,
+      content: p.content,
+      scheduledFor: new Date(p.scheduledFor),
+      type: p.type,
+      posted: p.posted,
+    }));
+    console.log(`📅 Loaded ${this.posts.length} posts from storage`);
+  }
+
+  /**
+   * Save current posts to persistent storage
+   */
+  private saveToStorage(): void {
+    const toStore: StoredPost[] = this.posts.map(p => ({
+      id: p.id || generatePostId(),
+      content: p.content,
+      scheduledFor: p.scheduledFor.toISOString(),
+      type: p.type,
+      posted: p.posted,
+    }));
+    saveScheduledPosts(toStore);
+  }
+
+  /**
+   * Generate a week's worth of content (only if needed)
    */
   generateWeeklyContent(): ScheduledPost[] {
+    // Check if regeneration is needed
+    if (!needsCalendarRegeneration() && this.posts.length > 0) {
+      console.log('📅 Using existing calendar (still valid)');
+      return this.posts;
+    }
+
+    console.log('📅 Generating new weekly content...');
     const now = new Date();
     const posts: ScheduledPost[] = [];
 
@@ -258,6 +313,7 @@ export class ContentCalendar {
 
       const tweet = TweetGenerator.oddsUpdate(EPSTEIN_ACTIVE_BURNS);
       posts.push({
+        id: generatePostId(),
         content: tweet.content,
         scheduledFor: date,
         type: 'odds',
@@ -274,6 +330,7 @@ export class ContentCalendar {
       const owedPercent = getTotalOwedBurnPercent();
       const tweet = TweetGenerator.engagement(owedPercent, 44 - owedPercent);
       posts.push({
+        id: generatePostId(),
         content: tweet.content,
         scheduledFor: date,
         type: 'engagement',
@@ -289,6 +346,7 @@ export class ContentCalendar {
 
       const tweet = TweetGenerator.fomo();
       posts.push({
+        id: generatePostId(),
         content: tweet.content,
         scheduledFor: date,
         type: 'fomo',
@@ -306,6 +364,7 @@ export class ContentCalendar {
     );
     const countdown = TweetGenerator.countdown(daysToEndOfYear, 'epstein');
     posts.push({
+      id: generatePostId(),
       content: countdown.content,
       scheduledFor: sunday,
       type: 'countdown',
@@ -313,6 +372,10 @@ export class ContentCalendar {
     });
 
     this.posts = posts.sort((a, b) => a.scheduledFor.getTime() - b.scheduledFor.getTime());
+
+    // Save to persistent storage
+    this.saveToStorage();
+
     return this.posts;
   }
 
@@ -325,10 +388,18 @@ export class ContentCalendar {
   }
 
   /**
-   * Mark post as published
+   * Mark post as published (with persistence)
    */
-  markPosted(post: ScheduledPost) {
+  markPosted(post: ScheduledPost, tweetId?: string): void {
     post.posted = true;
+
+    // Persist to storage
+    if (post.id) {
+      markPostAsPosted(post.id, tweetId);
+    } else {
+      // Fallback: save all posts
+      this.saveToStorage();
+    }
   }
 
   /**
@@ -338,6 +409,14 @@ export class ContentCalendar {
     return this.posts
       .filter(p => !p.posted)
       .slice(0, limit);
+  }
+
+  /**
+   * Force regenerate calendar (useful for testing)
+   */
+  forceRegenerate(): ScheduledPost[] {
+    this.posts = [];
+    return this.generateWeeklyContent();
   }
 }
 

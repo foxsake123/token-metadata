@@ -291,7 +291,7 @@ async function checkScheduledContent() {
       const result = await twitter.postTweet(post.content);
 
       if (result.success) {
-        contentCalendar.markPosted(post);
+        contentCalendar.markPosted(post, result.tweetId);
         tweetStats.totalPosted++;
         tweetStats.lastPosted = new Date();
         console.log(`✅ Tweet posted: ${result.tweetId}`);

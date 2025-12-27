@@ -22,13 +22,25 @@ export interface StoredBurn {
   txSignature?: string;
 }
 
+export interface StoredPost {
+  id: string;
+  content: string;
+  scheduledFor: string;
+  type: string;
+  posted: boolean;
+  postedAt?: string;
+  tweetId?: string;
+}
+
 export interface StorageData {
   burns: StoredBurn[];
+  scheduledPosts: StoredPost[];
   lastCheck: string;
+  lastCalendarGenerated?: string;
   version: number;
 }
 
-const CURRENT_VERSION = 1;
+const CURRENT_VERSION = 2;
 
 /**
  * Initialize storage directory and file
@@ -42,6 +54,7 @@ function initStorage(): void {
   if (!fs.existsSync(STORAGE_FILE)) {
     const initialData: StorageData = {
       burns: [],
+      scheduledPosts: [],
       lastCheck: new Date().toISOString(),
       version: CURRENT_VERSION,
     };
@@ -63,6 +76,12 @@ export function loadStorage(): StorageData {
     // Migration if needed
     if (parsed.version !== CURRENT_VERSION) {
       console.log(`📦 Migrating storage from v${parsed.version} to v${CURRENT_VERSION}`);
+
+      // v1 -> v2: Add scheduledPosts array
+      if (!parsed.scheduledPosts) {
+        parsed.scheduledPosts = [];
+      }
+
       parsed.version = CURRENT_VERSION;
       saveStorage(parsed);
     }
@@ -72,6 +91,7 @@ export function loadStorage(): StorageData {
     console.error('❌ Failed to load storage, creating new:', error);
     const initialData: StorageData = {
       burns: [],
+      scheduledPosts: [],
       lastCheck: new Date().toISOString(),
       version: CURRENT_VERSION,
     };
@@ -184,13 +204,112 @@ export function getStorageStats(): {
   totalBurns: number;
   pendingBurns: number;
   executedBurns: number;
+  scheduledPosts: number;
+  postedCount: number;
   lastCheck: string;
+  lastCalendarGenerated?: string;
 } {
   const data = loadStorage();
   return {
     totalBurns: data.burns.length,
     pendingBurns: data.burns.filter(b => b.status !== 'executed').length,
     executedBurns: data.burns.filter(b => b.status === 'executed').length,
+    scheduledPosts: data.scheduledPosts?.length || 0,
+    postedCount: data.scheduledPosts?.filter(p => p.posted).length || 0,
     lastCheck: data.lastCheck,
+    lastCalendarGenerated: data.lastCalendarGenerated,
   };
+}
+
+// =============================================================================
+// SCHEDULED POSTS PERSISTENCE
+// =============================================================================
+
+/**
+ * Save scheduled posts to storage
+ */
+export function saveScheduledPosts(posts: StoredPost[]): void {
+  const data = loadStorage();
+  data.scheduledPosts = posts;
+  data.lastCalendarGenerated = new Date().toISOString();
+  saveStorage(data);
+  console.log(`💾 Saved ${posts.length} scheduled posts`);
+}
+
+/**
+ * Load scheduled posts from storage
+ */
+export function loadScheduledPosts(): StoredPost[] {
+  const data = loadStorage();
+  return data.scheduledPosts || [];
+}
+
+/**
+ * Check if calendar needs regeneration (older than 1 day)
+ */
+export function needsCalendarRegeneration(): boolean {
+  const data = loadStorage();
+
+  if (!data.lastCalendarGenerated) {
+    return true;
+  }
+
+  const lastGen = new Date(data.lastCalendarGenerated);
+  const now = new Date();
+  const hoursSinceGen = (now.getTime() - lastGen.getTime()) / (1000 * 60 * 60);
+
+  // Regenerate if older than 24 hours or no unposted posts remain
+  const unpostedCount = (data.scheduledPosts || []).filter(p => !p.posted).length;
+
+  return hoursSinceGen > 24 || unpostedCount === 0;
+}
+
+/**
+ * Mark a post as posted
+ */
+export function markPostAsPosted(postId: string, tweetId?: string): boolean {
+  const data = loadStorage();
+  const post = data.scheduledPosts?.find(p => p.id === postId);
+
+  if (!post) {
+    console.error(`❌ Post not found: ${postId}`);
+    return false;
+  }
+
+  post.posted = true;
+  post.postedAt = new Date().toISOString();
+  if (tweetId) {
+    post.tweetId = tweetId;
+  }
+
+  saveStorage(data);
+  console.log(`💾 Marked post as posted: ${postId}`);
+  return true;
+}
+
+/**
+ * Get due posts (scheduled time has passed and not yet posted)
+ */
+export function getDueScheduledPosts(): StoredPost[] {
+  const data = loadStorage();
+  const now = new Date();
+
+  return (data.scheduledPosts || []).filter(p => {
+    if (p.posted) return false;
+    const scheduledTime = new Date(p.scheduledFor);
+    return scheduledTime <= now;
+  });
+}
+
+/**
+ * Get upcoming posts (not yet due)
+ */
+export function getUpcomingScheduledPosts(limit = 10): StoredPost[] {
+  const data = loadStorage();
+  const now = new Date();
+
+  return (data.scheduledPosts || [])
+    .filter(p => !p.posted && new Date(p.scheduledFor) > now)
+    .sort((a, b) => new Date(a.scheduledFor).getTime() - new Date(b.scheduledFor).getTime())
+    .slice(0, limit);
 }

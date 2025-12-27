@@ -25,7 +25,7 @@ The automation server is now successfully deployed to Railway after fixing multi
 - Server: ✅ Running on Railway
 - Health endpoint: ✅ Port 8080
 - Twitter API: ✅ Configured
-- Polymarket monitor: ⚠️ 422 error (API endpoint may have changed)
+- Polymarket monitor: ✅ Working (API endpoint fixed)
 
 ---
 
@@ -86,6 +86,39 @@ A comprehensive code review was conducted and the following issues were fixed:
 
 ---
 
+## Persistence & Confirmation Gate (Session Continuation)
+
+Added production-safety features:
+
+### New Files
+
+| File | Purpose |
+|------|---------|
+| `src/automation/storage.ts` | JSON-based persistent storage for burn state |
+
+### New Features
+
+| Feature | Description |
+|---------|-------------|
+| **Persistence Layer** | Burns are recorded to `data/burns.json` and survive server restarts |
+| **Burn Confirmation Gate** | Burns require manual approval by default (`requireConfirmation: true`) |
+| **Pending Approvals Workflow** | `approveBurn()`, `rejectBurn()`, `getPendingApprovals()` methods |
+| **Enhanced Health Check** | Detailed status endpoints with storage stats |
+
+### New Endpoints
+
+| Endpoint | Description |
+|----------|-------------|
+| `/health` | Full server status with config, storage stats, scheduler summary, pending approvals |
+| `/burns` | List of pending and executed burns from storage |
+| `/approvals` | Burns awaiting manual approval |
+
+### Commit
+
+`Add persistence layer and burn confirmation gate` - c4136a426
+
+---
+
 ## Useful Commands
 
 ```bash
@@ -100,6 +133,12 @@ railway up
 
 # Check health endpoint
 curl <railway-url>/health
+
+# Check burns
+curl <railway-url>/burns
+
+# Check pending approvals
+curl <railway-url>/approvals
 ```
 
 ---

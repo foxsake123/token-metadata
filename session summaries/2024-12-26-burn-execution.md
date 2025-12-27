@@ -1,60 +1,81 @@
-# Session Summary: 25% Burn Execution
+# Session Summary: 25% Burn Execution & Automation Setup
 **Date:** December 26, 2024
 
 ---
 
 ## What Was Accomplished
 
-### 1. Burn Execution (25% of Supply)
+### 1. Burn Execution (25% of Supply) ✅
 Successfully executed burns for 8 confirmed Epstein list names:
 
-| Name | Burn % | Amount (LIST) |
-|------|--------|---------------|
-| Prince Andrew | 5.0% | 492,461 |
-| Bill Gates | 4.5% | 443,215 |
-| Alan Dershowitz | 3.5% | 344,723 |
-| Bill Clinton | 3.5% | 344,723 |
-| Stephen Hawking | 3.0% | 295,476 |
-| Donald Trump | 2.0% | 196,984 |
-| Michael Jackson | 2.0% | 196,984 |
-| Barack Obama | 1.5% | 147,738 |
-| **TOTAL** | **25%** | **2,462,304** |
+| Name | Burn % | Amount (LIST) | TX Link |
+|------|--------|---------------|---------|
+| Prince Andrew | 5.0% | 492,461 | [Solscan](https://solscan.io/tx/2LP6u8UKGf7xc5Dj6SnFDLcB25txuqc992yekAD1HWB84ZHS1AddfK3hkywCUT3Lj3idLM9AhMSm4KA7TMM6pWk8) |
+| Bill Gates | 4.5% | 443,215 | [Solscan](https://solscan.io/tx/2LP6u8UKGf7xc5Dj6SnFDLcB25txuqc992yekAD1HWB84ZHS1AddfK3hkywCUT3Lj3idLM9AhMSm4KA7TMM6pWk8) |
+| Alan Dershowitz | 3.5% | 344,723 | [Solscan](https://solscan.io/tx/2LP6u8UKGf7xc5Dj6SnFDLcB25txuqc992yekAD1HWB84ZHS1AddfK3hkywCUT3Lj3idLM9AhMSm4KA7TMM6pWk8) |
+| Bill Clinton | 3.5% | 344,723 | [Solscan](https://solscan.io/tx/2LP6u8UKGf7xc5Dj6SnFDLcB25txuqc992yekAD1HWB84ZHS1AddfK3hkywCUT3Lj3idLM9AhMSm4KA7TMM6pWk8) |
+| Stephen Hawking | 3.0% | 295,476 | [Solscan](https://solscan.io/tx/2LP6u8UKGf7xc5Dj6SnFDLcB25txuqc992yekAD1HWB84ZHS1AddfK3hkywCUT3Lj3idLM9AhMSm4KA7TMM6pWk8) |
+| Donald Trump | 2.0% | 196,984 | [Solscan](https://solscan.io/tx/2LP6u8UKGf7xc5Dj6SnFDLcB25txuqc992yekAD1HWB84ZHS1AddfK3hkywCUT3Lj3idLM9AhMSm4KA7TMM6pWk8) |
+| Michael Jackson | 2.0% | 196,984 | [Solscan](https://solscan.io/tx/xb43t1h2JfR7o45pePLKwgwKeV9Esjqcm9NoXszsM2mNF43poJ5TvNKrjPC88w1e4Z8L7St18CNhtC8vksNQybH) |
+| Barack Obama | 1.5% | 147,738 | [Solscan](https://solscan.io/tx/3CaoqgaSEc57aWQBN9KH8ARBFTWMosASHe9ZXGrRcQz9SLbMxEBA4yD2nuxwsjwPrvJj8RsTfZos8MVp3AzXCcou) |
+| **TOTAL** | **25%** | **2,462,304** | |
 
 **Supply Change:**
 - Before: 9,849,232 LIST
-- After: 7,386,928 LIST
+- After: **7,386,928 LIST**
 
-### 2. Twitter Automation Setup
-- Connected @ListDrop Twitter account via developer API
-- Set up OAuth 1.0a with Read/Write permissions
-- Created `src/automation/twitter.ts` for automated posting
+### 2. Twitter Automation ✅
+- Connected @ListDrop Twitter account
+- OAuth 1.0a with Read/Write permissions
+- Created `src/automation/twitter.ts`
 
 **Tweets Posted:**
 1. Main burn announcement: https://twitter.com/i/status/2004687766211223956
 2. Supply check: https://twitter.com/i/status/2004688158294782328
 3. What's next: https://twitter.com/i/status/2004688237269275087
 
-### 3. Code Updates
-- Fixed burn config to use actual supply (9.85M, not 1B)
-- Added dotenv support to scripts
-- Marked all 8 burns as `executed` in config
-- Updated website widgets with correct supply numbers
+### 3. Railway Deployment ✅
+- Project: `zesty-charm`
+- Dashboard: https://railway.com/project/2dec57d2-e6fd-477b-bf0b-c5b046a46bee
+- Service linked and variables configured
+- Dockerfile fixed to build TypeScript during deploy
 
-### 4. GitHub
-- All changes pushed to `fresh-main` branch
-- Repo: https://github.com/foxsake123/token-metadata/tree/fresh-main
+**Environment Variables Set:**
+- SOLANA_RPC_URL
+- TWITTER_API_KEY
+- TWITTER_API_SECRET
+- TWITTER_ACCESS_TOKEN
+- TWITTER_ACCESS_SECRET
+- POLL_INTERVAL (60000ms)
+- DRY_RUN (false)
+
+### 4. Website Widgets Created ✅
+| Widget | File | Purpose |
+|--------|------|---------|
+| Burn Tracker | `website/burn-tracker.html` | Shows burn stats & progress |
+| Diddy Trial | `website/diddy-trial.html` | Countdown & verdict burns |
+| Burn Proof | `website/burn-proof.html` | TX links for all 8 burns |
+
+### 5. Holder Count Checked
+- **Current: 42 holders**
+- Need 100 for first milestone burn (2%)
 
 ---
 
-## Key Files Modified
+## Files Created/Modified
 
-| File | Changes |
-|------|---------|
-| `src/burn/config.ts` | Updated TOTAL_SUPPLY to 9,849,232; marked burns as executed |
-| `src/automation/twitter.ts` | Added dotenv, fixed URL import |
-| `scripts/execute-burns.ts` | Added dotenv support |
-| `website/burn-tracker.html` | Updated token amounts to 2.46M |
-| `.gitignore` | Added .env to prevent secret commits |
+| File | Description |
+|------|-------------|
+| `src/burn/config.ts` | Updated supply to 9.85M, marked burns executed |
+| `src/automation/twitter.ts` | Twitter API integration with dotenv |
+| `src/automation/server.ts` | Automation server with health endpoint |
+| `scripts/execute-burns.ts` | Burn execution script with dotenv |
+| `website/burn-tracker.html` | Burn statistics widget |
+| `website/diddy-trial.html` | Diddy trial countdown widget |
+| `website/burn-proof.html` | Burn proof with TX links |
+| `Dockerfile` | Fixed to build TS during deploy |
+| `DEPLOY.md` | Railway deployment guide |
+| `.env` | Environment variables (not in git) |
 
 ---
 
@@ -62,19 +83,20 @@ Successfully executed burns for 8 confirmed Epstein list names:
 
 **.env file location:** `C:\Users\shorg\list-token\shorg\.env`
 
-Required variables:
 ```
 SOLANA_RPC_URL=https://api.mainnet-beta.solana.com
 BURN_AUTHORITY_SECRET=<base58-private-key>
-TWITTER_API_KEY=<from-developer.twitter.com>
-TWITTER_API_SECRET=<from-developer.twitter.com>
-TWITTER_ACCESS_TOKEN=<from-developer.twitter.com>
-TWITTER_ACCESS_SECRET=<from-developer.twitter.com>
+TWITTER_API_KEY=<key>
+TWITTER_API_SECRET=<secret>
+TWITTER_ACCESS_TOKEN=<token>
+TWITTER_ACCESS_SECRET=<secret>
+POLL_INTERVAL=60000
+DRY_RUN=false
 ```
 
 ---
 
-## Wallets Used
+## Wallets
 
 | Purpose | Address |
 |---------|---------|
@@ -83,49 +105,64 @@ TWITTER_ACCESS_SECRET=<from-developer.twitter.com>
 
 ---
 
-## Pending Tasks
+## Pending / Next Steps
 
-### Website Update (Manual)
-Copy widget code to TypeDream:
-- `website/burn-tracker.html` → Burn schedule page
-- `website/diddy-trial.html` → Diddy trial section
+### Check When You Return
+1. **Railway deployment status** - Run `railway logs` to verify server is running
+2. **Health endpoint** - Should respond at the Railway URL `/health`
+
+### To Do
+| Task | Priority | Notes |
+|------|----------|-------|
+| Add burn-proof widget to TypeDream | High | Copy `website/burn-proof.html` |
+| Verify Railway is running | High | Check `railway logs` |
+| Grow to 100 holders | Medium | Unlocks 2% milestone burn |
+| Grow Twitter to 1K followers | Medium | Unlocks 1.5% milestone burn |
+| Monitor Polymarket | Ongoing | Automation handles this |
 
 ### Future Burns
-| Event | Pending % |
-|-------|-----------|
-| Epstein Active (Polymarket) | 14.5% |
-| Community Milestones | 14% |
-| Diddy Trial (May 2025) | 15% |
+| Event | Pending % | Timeline |
+|-------|-----------|----------|
+| Epstein Active (Polymarket) | 14.5% | Now - Dec 31, 2025 |
+| Community Milestones | 14% | Ongoing |
+| Diddy Trial | 15% | ~May 2025 |
 
 ---
 
 ## Useful Commands
 
 ```bash
+# Check Railway status
+railway logs
+
 # Preview pending burns
 npm run burn:dry-run
 
 # Execute burns
 npm run burn:execute
 
-# Test tweet (dry run)
-npm run tweet:test
-
 # Post a tweet
-npx ts-node src/automation/twitter.ts "Your tweet here"
+npx ts-node src/automation/twitter.ts "Your tweet"
 
-# Run scheduler (monitors Polymarket)
-npm run dev:scheduler
+# Check holder count
+curl -s "https://api.mainnet-beta.solana.com" -X POST -H "Content-Type: application/json" -d '{"jsonrpc":"2.0","id":1,"method":"getProgramAccounts","params":["TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",{"encoding":"jsonParsed","filters":[{"dataSize":165},{"memcmp":{"offset":0,"bytes":"5oKiBTTUutgk95g4MEgxUHtWJ9n21QXPSAusL6ic8KgM"}}]}]}' | npx json result | npx json length
 ```
 
 ---
 
-## Notes
+## GitHub Repository
+- **URL:** https://github.com/foxsake123/token-metadata
+- **Branch:** `fresh-main` (default)
+- All changes pushed
 
-- Token supply was 9.85M (not 1B as originally assumed)
+---
+
+## Notes
+- Token supply was 9.85M (not 1B as originally documented)
 - Burns are permanent and verified on-chain
-- Twitter developer account is under different handle but authorized for @ListDrop
-- .env file contains secrets - never commit to git
+- Twitter developer account authorized for @ListDrop
+- `.env` contains secrets - never commit to git
+- Railway has 7 days or $4.40 credit remaining
 
 ---
 

@@ -8,7 +8,7 @@ COPY package*.json ./
 COPY tsconfig*.json ./
 
 # Install dependencies (ignore prepublish script, we'll build manually)
-RUN npm install --ignore-scripts
+RUN npm install --ignore-scripts --legacy-peer-deps
 
 # Copy source
 COPY src/ ./src/

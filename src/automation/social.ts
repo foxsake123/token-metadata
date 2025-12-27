@@ -89,6 +89,57 @@ export const TWEET_TEMPLATES = {
 
     `📅 COUNTDOWN\n\nDiddy trial approaching...\n\nVerdict possibilities:\n• No Prison: 8% burn\n• Life: 5% burn\n• 20+ years: 3% burn\n\nPlus bonuses 🔥\n\nAre you ready?\n\n#LIST`,
   ],
+
+  // News jacking - react to current events
+  newsJacking: [
+    `Everyone talking about {topic}...\n\nMeanwhile $LIST is quietly burning supply every time a name drops 🔥\n\nOn-chain. Verified. Permanent.\n\n#LIST #Solana`,
+
+    `Breaking news about {topic}?\n\n$LIST holders: "Add it to the list" 📜\n\nThe truth always comes out.\n\n#LIST`,
+
+    `{topic} trending?\n\nReminder: We've already burned 25% of supply.\n\n8 names confirmed.\n8 burns executed.\n\nWho's next? 👀\n\n$LIST`,
+  ],
+
+  // Meme formats
+  meme: [
+    `Other tokens: "We might burn someday"\n\n$LIST: *burns 25% in first month*\n\n📜🔥\n\n#Solana #Memecoin`,
+
+    `POV: You didn't buy $LIST before the next name dropped\n\n😭😭😭\n\n#LIST #FOMO`,
+
+    `Normal people: "What's on the list?"\n\n$LIST holders: "Who's NEXT on the list?" 👀\n\n#Solana`,
+
+    `Me explaining $LIST to my friends:\n\n"So when someone gets exposed, we burn tokens"\n\n"That's the whole thing?"\n\n"Yes. And it's beautiful." 🔥\n\n#LIST`,
+
+    `$LIST tokenomics:\n\n✅ Name drops\n✅ We burn\n✅ Supply goes down\n✅ Repeat\n\nIt's that simple. 📜🔥\n\n#Solana`,
+  ],
+
+  // Engagement bait - questions and polls
+  engagementBait: [
+    `Who do you think is next on the list? 👇\n\nDrop your predictions below.\n\nMost upvoted = we make a meme about it 😂\n\n$LIST #Solana`,
+
+    `Quick poll:\n\nHow much $LIST are you holding?\n\n🔥 < 10K\n🔥🔥 10K - 100K\n🔥🔥🔥 100K - 1M\n🔥🔥🔥🔥 1M+\n\nComment below 👇`,
+
+    `Wrong answers only:\n\nWhy are you holding $LIST? 😂\n\n#LIST #Solana`,
+
+    `Finish this sentence:\n\n"I'm holding $LIST because ___________"\n\nBest answer gets a shoutout 🔥\n\n#Solana`,
+
+    `Rate your $LIST bag:\n\n😢 Paper hands\n😐 Just started\n😊 Comfy\n🤑 Whale alert\n\n#LIST`,
+  ],
+
+  // Supply shock / scarcity
+  supplyShock: [
+    `Supply update:\n\n🔴 Started: 9,849,232 LIST\n🟢 Now: 7,386,928 LIST\n📉 Burned: 2,462,304 LIST (25%)\n\nAnd we're just getting started.\n\n$LIST #Solana`,
+
+    `Every burn = permanent removal\n\nNo mint function.\nNo inflation.\nNo rug.\n\nJust burns. 🔥\n\n$LIST`,
+
+    `Math time:\n\n25% burned ✅\n19% more pending ⏳\n\nPotential total burn: 44%\n\nLess than half the supply could remain.\n\nAre you positioned?\n\n$LIST #Solana`,
+  ],
+
+  // Proof / transparency
+  proof: [
+    `Don't trust, verify.\n\nEvery $LIST burn:\n✅ On-chain TX\n✅ Solscan link\n✅ Permanent record\n\nNo fake burns. No promises.\nJust proof. 🔥\n\nsolscan.io/token/{token}\n\n#Solana`,
+
+    `"Prove it"\n\nOk:\n\n🔗 Prince Andrew burn: solscan.io/tx/...\n🔗 Bill Gates burn: solscan.io/tx/...\n🔗 8 total burns executed\n\nAll on-chain. All verifiable.\n\n$LIST`,
+  ],
 };
 
 // =============================================================================

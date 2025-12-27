@@ -181,6 +181,17 @@ const server = http.createServer((req, res) => {
   } else if (req.url === '/metrics') {
     // Token metrics: holders, volume, milestones
     handleMetrics(res);
+  } else if (req.url?.startsWith('/admin/approve/') && req.method === 'POST') {
+    // Admin: Approve a pending burn
+    const slug = req.url.replace('/admin/approve/', '');
+    handleAdminApprove(req, res, slug);
+  } else if (req.url?.startsWith('/admin/reject/') && req.method === 'POST') {
+    // Admin: Reject a pending burn
+    const slug = req.url.replace('/admin/reject/', '');
+    handleAdminReject(req, res, slug);
+  } else if (req.url === '/admin/status') {
+    // Admin: Get full system status
+    handleAdminStatus(res);
   } else {
     res.writeHead(404);
     res.end(JSON.stringify({ error: 'Not found' }));
@@ -227,6 +238,121 @@ async function handleMetrics(res: http.ServerResponse) {
     res.writeHead(500);
     res.end(JSON.stringify({ error: errorMsg }));
   }
+}
+
+// Validate admin API key
+function validateAdminKey(req: http.IncomingMessage): boolean {
+  const adminKey = process.env.ADMIN_API_KEY;
+  if (!adminKey) {
+    // If no key configured, allow access (dev mode)
+    console.warn('⚠️ ADMIN_API_KEY not set - admin endpoints unprotected');
+    return true;
+  }
+
+  const authHeader = req.headers['authorization'];
+  if (!authHeader) return false;
+
+  const providedKey = authHeader.replace('Bearer ', '');
+  return providedKey === adminKey;
+}
+
+// Handle admin approve endpoint
+function handleAdminApprove(req: http.IncomingMessage, res: http.ServerResponse, slug: string) {
+  if (!validateAdminKey(req)) {
+    res.writeHead(401);
+    res.end(JSON.stringify({ error: 'Unauthorized - provide valid ADMIN_API_KEY' }));
+    return;
+  }
+
+  if (!scheduler) {
+    res.writeHead(500);
+    res.end(JSON.stringify({ error: 'Scheduler not initialized' }));
+    return;
+  }
+
+  const success = scheduler.approveBurn(slug);
+
+  if (success) {
+    res.writeHead(200);
+    res.end(JSON.stringify({
+      success: true,
+      message: `Approved burn for: ${slug}`,
+      note: 'Burn will execute on next scheduler cycle',
+    }, null, 2));
+  } else {
+    res.writeHead(404);
+    res.end(JSON.stringify({
+      error: `No pending approval found for: ${slug}`,
+      hint: 'Check /approvals for pending burns',
+    }));
+  }
+}
+
+// Handle admin reject endpoint
+function handleAdminReject(req: http.IncomingMessage, res: http.ServerResponse, slug: string) {
+  if (!validateAdminKey(req)) {
+    res.writeHead(401);
+    res.end(JSON.stringify({ error: 'Unauthorized - provide valid ADMIN_API_KEY' }));
+    return;
+  }
+
+  if (!scheduler) {
+    res.writeHead(500);
+    res.end(JSON.stringify({ error: 'Scheduler not initialized' }));
+    return;
+  }
+
+  const success = scheduler.rejectBurn(slug);
+
+  if (success) {
+    res.writeHead(200);
+    res.end(JSON.stringify({
+      success: true,
+      message: `Rejected burn for: ${slug}`,
+    }, null, 2));
+  } else {
+    res.writeHead(404);
+    res.end(JSON.stringify({
+      error: `No pending approval found for: ${slug}`,
+      hint: 'Check /approvals for pending burns',
+    }));
+  }
+}
+
+// Handle admin status endpoint
+function handleAdminStatus(res: http.ServerResponse) {
+  const storageStats = getStorageStats();
+  const pendingApprovals = scheduler?.getPendingApprovals() || [];
+  const summary = scheduler?.getSummary();
+
+  res.writeHead(200);
+  res.end(JSON.stringify({
+    server: {
+      uptime: process.uptime(),
+      timestamp: new Date().toISOString(),
+      dryRun: DRY_RUN,
+    },
+    twitter: {
+      configured: config.twitterConfigured,
+      stats: tweetStats,
+    },
+    discord: {
+      configured: config.discordConfigured,
+    },
+    scheduler: summary ? {
+      owedBurns: summary.owed.length,
+      scheduledBurns: summary.scheduled.length,
+      executedBurns: summary.executed.length,
+      totalOwedPercent: summary.totalOwedPercent,
+      totalExecutedPercent: summary.totalExecutedPercent,
+    } : null,
+    storage: storageStats,
+    pendingApprovals: pendingApprovals.map(b => ({
+      slug: b.target.slug,
+      name: b.target.name,
+      percent: b.target.burnAllocationPercent,
+    })),
+  }, null, 2));
 }
 
 // Handle manual tweet triggers

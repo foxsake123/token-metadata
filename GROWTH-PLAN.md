@@ -261,6 +261,59 @@ Add to website:
 
 ---
 
+## Growth Ideas (Expanded Roadmap)
+
+### Viral Mechanics
+| Idea | Description | Effort |
+|------|-------------|--------|
+| **Prediction Leaderboard** | Track who predicted burns correctly, reward top predictors | Medium |
+| **Burn Bingo** | Bingo card with potential names, share when you get a line | Low |
+| **"I Was Here" NFTs** | Free mint for holders at major burn events | Medium |
+| **Countdown Widget** | Embeddable countdown to Diddy trial for other sites | Low |
+
+### Community Events
+| Event | Frequency | Purpose |
+|-------|-----------|---------|
+| **Prediction Contests** | Weekly | Guess next name, win LIST |
+| **Meme Mondays** | Weekly | Best meme wins tokens |
+| **Burn Parties** | On burn events | Live Twitter Spaces when burn happens |
+| **AMA Sessions** | Bi-weekly | Build trust, answer questions |
+
+### Partnerships
+| Target | Approach | Potential |
+|--------|----------|-----------|
+| **Polymarket** | Feature $LIST as example of prediction market integration | High |
+| **CT News Accounts** | Exclusive burn alerts | Medium |
+| **Solana Meme Coin Communities** | Cross-promotion | Medium |
+| **True Crime Podcasts** | Sponsor segments about Epstein/Diddy | High |
+
+### Technical Enhancements
+| Feature | Value | Effort |
+|---------|-------|--------|
+| **Burn Notification Bot** | Telegram/Discord alerts on burn | Low |
+| **Holder Verification** | Verify holdings for Discord roles | Medium |
+| **Live Price Ticker** | Website widget with price | Low |
+| **Portfolio Tracker** | Show user's LIST value + burn impact | Medium |
+| **Burn Certificate Generator** | Shareable image for each burn | Low |
+
+### Narrative Plays
+| Timing | Narrative | Action |
+|--------|-----------|--------|
+| **Diddy Trial Start (May 2025)** | "The main event begins" | Major content push, prediction markets |
+| **New Document Releases** | "More names incoming" | Real-time Twitter coverage |
+| **Holder Milestones** | "100/500/1000 holders" | Celebration burns, airdrops |
+| **Supply Milestones** | "50% burned" | Major announcement thread |
+
+### Revenue/Sustainability
+| Idea | Description |
+|------|-------------|
+| **Merch Store** | "The List is Real" shirts, hoodies |
+| **Premium Discord** | Paid tier with early alerts, alpha |
+| **Prediction Market Fees** | If you build your own mini-market |
+| **Sponsored Burns** | Brands pay to add custom burns |
+
+---
+
 ## Metrics to Track
 
 | Metric | Current | Week 1 Goal | Month 1 Goal |
@@ -274,13 +327,14 @@ Add to website:
 
 ---
 
-## Quick Wins (Do Today)
+## Quick Wins - COMPLETED ✓
 
-1. **Tweet the burn proof** - 25% already burned is significant
-2. **Create Discord** - Takes 10 minutes
-3. **Pin important tweets** - Burns executed, how to buy
-4. **Engage with Epstein/Diddy tweets** - Reply with $LIST angle
-5. **Check liquidity** - Know where you stand
+1. ~~Tweet the burn proof~~ ✓ Posted 3-tweet thread
+2. ~~Create Discord~~ ✓ discord.gg/s7MZfe8pRY
+3. ~~Pin important tweets~~ ✓
+4. ~~Create Telegram~~ ✓ t.me/listdropofficial
+5. ~~Check liquidity~~ ✓ $3,700 (needs more)
+6. ~~230K KOL post~~ ✓ @VisionnaireWeb3 posted
 
 ---
 

@@ -106,7 +106,7 @@ export class ListBurnExecutor {
       console.log(`Burn successful for ${target.name}: ${signature}`);
 
       return {
-        target: { ...target, status: 'confirmed', burnTxSignature: signature, confirmedAt: new Date() },
+        target: { ...target, status: 'confirmed', burnTxSignature: signature, resolvedAt: new Date() },
         success: true,
         signature,
         burnedAmount: burnAmount,

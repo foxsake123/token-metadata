@@ -10,9 +10,7 @@
 
 import {
   BurnTarget,
-  EPSTEIN_RESOLVED_BURNS,
   EPSTEIN_ACTIVE_BURNS,
-  DIDDY_SENTENCE_BURNS,
   calculateBurnAmount,
   formatBurnAmount,
   getTotalOwedBurnPercent,
@@ -355,7 +353,7 @@ export interface TwitterConfig {
 }
 
 export class TwitterPoster {
-  constructor(private config: TwitterConfig) {}
+  constructor(private _config: TwitterConfig) {}
 
   /**
    * Post a tweet (placeholder - integrate with Twitter API)

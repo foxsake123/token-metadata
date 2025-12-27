@@ -3,12 +3,14 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Install all dependencies (including dev for build)
+# Copy all config files first
 COPY package*.json ./
-RUN npm install
-
-# Copy source and config
 COPY tsconfig*.json ./
+
+# Install dependencies (ignore prepublish script, we'll build manually)
+RUN npm install --ignore-scripts
+
+# Copy source
 COPY src/ ./src/
 
 # Build TypeScript

@@ -17,6 +17,13 @@ import {
   formatBurnAmount,
 } from '../burn/config';
 import { checkConfirmedPredictions } from '../burn/polymarket';
+import {
+  isBurnRecorded,
+  isBurnExecuted,
+  recordBurnDetected,
+  recordBurnExecuted,
+  getStorageStats,
+} from './storage';
 
 export interface ScheduledBurn {
   target: BurnTarget;
@@ -31,16 +38,86 @@ export interface MilestoneCheck {
   lastChecked?: Date;
 }
 
+export interface BurnSchedulerOptions {
+  rpcUrl: string;
+  burnAuthoritySecret?: Uint8Array;
+  requireConfirmation?: boolean; // If true, burns require manual approval
+  autoExecute?: boolean; // If true, execute burns automatically (default: false for safety)
+}
+
 export class BurnScheduler {
   private scheduledBurns: ScheduledBurn[] = [];
   private checkInterval: ReturnType<typeof setInterval> | null = null;
+  private pendingApprovals: Map<string, ScheduledBurn> = new Map();
+  private options: BurnSchedulerOptions;
+
+  // Callbacks
   public onBurnDetected?: (target: BurnTarget) => Promise<void>;
   public onBurnExecuted?: (target: BurnTarget, signature: string) => Promise<void>;
+  public onBurnPendingApproval?: (target: BurnTarget) => Promise<void>;
 
-  constructor(
-    private rpcUrl: string,
-    private _burnAuthoritySecret?: Uint8Array
-  ) {}
+  constructor(rpcUrlOrOptions: string | BurnSchedulerOptions, burnAuthoritySecret?: Uint8Array) {
+    if (typeof rpcUrlOrOptions === 'string') {
+      // Legacy constructor
+      this.options = {
+        rpcUrl: rpcUrlOrOptions,
+        burnAuthoritySecret,
+        requireConfirmation: true, // Default to safe mode
+        autoExecute: false,
+      };
+    } else {
+      this.options = {
+        requireConfirmation: true,
+        autoExecute: false,
+        ...rpcUrlOrOptions,
+      };
+    }
+  }
+
+  /**
+   * Check if confirmation is required for burns
+   */
+  get requiresConfirmation(): boolean {
+    return this.options.requireConfirmation ?? true;
+  }
+
+  /**
+   * Get list of burns pending approval
+   */
+  getPendingApprovals(): ScheduledBurn[] {
+    return Array.from(this.pendingApprovals.values());
+  }
+
+  /**
+   * Approve a pending burn for execution
+   */
+  approveBurn(slug: string): boolean {
+    const burn = this.pendingApprovals.get(slug);
+    if (!burn) {
+      console.error(`❌ No pending approval for: ${slug}`);
+      return false;
+    }
+
+    this.pendingApprovals.delete(slug);
+    this.scheduledBurns.push(burn);
+    console.log(`✅ Approved burn for execution: ${burn.target.name}`);
+    return true;
+  }
+
+  /**
+   * Reject a pending burn
+   */
+  rejectBurn(slug: string): boolean {
+    const burn = this.pendingApprovals.get(slug);
+    if (!burn) {
+      console.error(`❌ No pending approval for: ${slug}`);
+      return false;
+    }
+
+    this.pendingApprovals.delete(slug);
+    console.log(`🚫 Rejected burn: ${burn.target.name}`);
+    return true;
+  }
 
   /**
    * Start the automated scheduler
@@ -111,7 +188,14 @@ export class BurnScheduler {
       const target = [...EPSTEIN_ACTIVE_BURNS, ...DIDDY_SENTENCE_BURNS, ...DIDDY_BONUS_BURNS]
         .find((t: BurnTarget) => t.name.toLowerCase() === name.toLowerCase() && t.status === 'pending');
 
-      if (target && !this.isAlreadyScheduled(target.slug)) {
+      if (!target) continue;
+
+      // Check both in-memory, pending approvals, and persistent storage
+      const alreadyTracked = this.isAlreadyScheduled(target.slug) ||
+        this.pendingApprovals.has(target.slug) ||
+        isBurnRecorded(target.slug);
+
+      if (!alreadyTracked) {
         // Create a copy with updated status to avoid mutating imported constants
         const confirmedTarget: BurnTarget = { ...target, status: 'confirmed' };
         const burn: ScheduledBurn = {
@@ -119,11 +203,21 @@ export class BurnScheduler {
           scheduledFor: new Date(),
           executed: false,
         };
-        this.scheduledBurns.push(burn);
+
+        // Persist to storage
+        recordBurnDetected(target.slug, target.name, target.burnAllocationPercent);
         newlyConfirmed.push(name);
 
-        console.log(`🆕 New confirmation: ${name} - scheduling burn`);
-        await this.onBurnDetected?.(confirmedTarget);
+        // If confirmation required, add to pending approvals instead of scheduled burns
+        if (this.requiresConfirmation) {
+          this.pendingApprovals.set(target.slug, burn);
+          console.log(`🔔 New confirmation requiring approval: ${name} (${target.burnAllocationPercent}%)`);
+          await this.onBurnPendingApproval?.(confirmedTarget);
+        } else {
+          this.scheduledBurns.push(burn);
+          console.log(`🆕 New confirmation: ${name} - scheduling burn`);
+          await this.onBurnDetected?.(confirmedTarget);
+        }
       }
     }
 
@@ -170,6 +264,9 @@ export class BurnScheduler {
         burn.txSignature = `simulated_${Date.now()}_${burn.target.slug}`;
         burn.target.status = 'executed';
 
+        // Persist execution to storage
+        recordBurnExecuted(burn.target.slug, burn.txSignature);
+
         executed.push(burn);
         await this.onBurnExecuted?.(burn.target, burn.txSignature!);
 
@@ -183,7 +280,7 @@ export class BurnScheduler {
   }
 
   /**
-   * Get summary of all burns
+   * Get summary of all burns (includes persistent storage stats)
    */
   getSummary(): {
     owed: BurnTarget[];
@@ -191,6 +288,7 @@ export class BurnScheduler {
     executed: ScheduledBurn[];
     totalOwedPercent: number;
     totalExecutedPercent: number;
+    storageStats: ReturnType<typeof getStorageStats>;
   } {
     const owed = getOwedBurns();
     const executed = this.scheduledBurns.filter(b => b.executed);
@@ -201,11 +299,13 @@ export class BurnScheduler {
       executed,
       totalOwedPercent: owed.reduce((sum: number, t: BurnTarget) => sum + t.burnAllocationPercent, 0),
       totalExecutedPercent: executed.reduce((sum: number, b: ScheduledBurn) => sum + b.target.burnAllocationPercent, 0),
+      storageStats: getStorageStats(),
     };
   }
 
   private isAlreadyScheduled(slug: string): boolean {
-    return this.scheduledBurns.some(b => b.target.slug === slug);
+    // Check both in-memory and persistent storage
+    return this.scheduledBurns.some(b => b.target.slug === slug) || isBurnRecorded(slug);
   }
 }
 

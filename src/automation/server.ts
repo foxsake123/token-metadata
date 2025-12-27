@@ -8,6 +8,7 @@ import 'dotenv/config';
 import http from 'http';
 import { BurnScheduler } from './scheduler';
 import { TwitterClient } from './twitter';
+import { getStorageStats, getPendingBurns, getExecutedBurns } from './storage';
 
 // Environment variable validation
 interface EnvConfig {
@@ -58,19 +59,75 @@ const PORT = config.PORT;
 const POLL_INTERVAL = config.POLL_INTERVAL;
 const DRY_RUN = config.DRY_RUN;
 
-// Health check server
+// Scheduler reference for health check
+let scheduler: BurnScheduler | null = null;
+
+// Health check server with detailed status
 const server = http.createServer((req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+
   if (req.url === '/health' || req.url === '/') {
-    res.writeHead(200, { 'Content-Type': 'application/json' });
+    const storageStats = getStorageStats();
+    const pendingApprovals = scheduler?.getPendingApprovals() || [];
+    const summary = scheduler?.getSummary();
+
+    res.writeHead(200);
     res.end(JSON.stringify({
       status: 'healthy',
       service: 'list-token-automation',
       uptime: process.uptime(),
       timestamp: new Date().toISOString(),
-    }));
+      config: {
+        dryRun: DRY_RUN,
+        pollInterval: POLL_INTERVAL,
+        twitterConfigured: config.twitterConfigured,
+        burnAuthorityConfigured: config.burnAuthorityConfigured,
+        requiresConfirmation: scheduler?.requiresConfirmation ?? true,
+      },
+      storage: storageStats,
+      scheduler: summary ? {
+        owedBurns: summary.owed.length,
+        scheduledBurns: summary.scheduled.length,
+        executedBurns: summary.executed.length,
+        totalOwedPercent: summary.totalOwedPercent,
+        totalExecutedPercent: summary.totalExecutedPercent,
+      } : null,
+      pendingApprovals: pendingApprovals.map(b => ({
+        slug: b.target.slug,
+        name: b.target.name,
+        percent: b.target.burnAllocationPercent,
+        scheduledFor: b.scheduledFor.toISOString(),
+      })),
+    }, null, 2));
+  } else if (req.url === '/burns') {
+    // Detailed burns endpoint
+    const pending = getPendingBurns();
+    const executed = getExecutedBurns();
+
+    res.writeHead(200);
+    res.end(JSON.stringify({
+      pending,
+      executed,
+      total: pending.length + executed.length,
+    }, null, 2));
+  } else if (req.url === '/approvals') {
+    // Pending approvals endpoint
+    const pendingApprovals = scheduler?.getPendingApprovals() || [];
+
+    res.writeHead(200);
+    res.end(JSON.stringify({
+      requiresConfirmation: scheduler?.requiresConfirmation ?? true,
+      pendingApprovals: pendingApprovals.map(b => ({
+        slug: b.target.slug,
+        name: b.target.name,
+        percent: b.target.burnAllocationPercent,
+        scheduledFor: b.scheduledFor.toISOString(),
+      })),
+      count: pendingApprovals.length,
+    }, null, 2));
   } else {
     res.writeHead(404);
-    res.end('Not found');
+    res.end(JSON.stringify({ error: 'Not found' }));
   }
 });
 
@@ -108,9 +165,18 @@ async function main() {
 
   // Initialize scheduler
   const rpcUrl = process.env.SOLANA_RPC_URL || 'https://api.mainnet-beta.solana.com';
-  const scheduler = new BurnScheduler(rpcUrl);
+  scheduler = new BurnScheduler({
+    rpcUrl,
+    requireConfirmation: true, // Require manual approval for burns in production
+    autoExecute: false,
+  });
 
   // Set up callbacks
+  scheduler.onBurnPendingApproval = async (target) => {
+    console.log(`🔔 Burn pending approval: ${target.name} (${target.burnAllocationPercent}%)`);
+    console.log(`   Use /approvals endpoint to view pending burns`);
+  };
+
   scheduler.onBurnDetected = async (target) => {
     console.log(`🎯 Burn detected: ${target.name} (${target.burnAllocationPercent}%)`);
 

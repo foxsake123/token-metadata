@@ -1,0 +1,355 @@
+<!--
+  LIST Token Weekly Prediction Contest Widget
+  Embed this in TypeDream using: /embed > Code
+
+  Features:
+  - Vote on next confirmed name
+  - Weekly leaderboard
+  - Prize pool display
+-->
+
+<style>
+  .prediction-widget {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border-radius: 16px;
+    padding: 24px;
+    color: white;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .pred-header {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  .pred-header h2 {
+    margin: 0 0 8px 0;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .pred-header p {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 14px;
+  }
+
+  .pred-prize {
+    background: linear-gradient(135deg, #ff6b35, #ff4444);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  .pred-prize-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    opacity: 0.8;
+  }
+
+  .pred-prize-value {
+    font-size: 32px;
+    font-weight: 700;
+  }
+
+  .pred-prize-usd {
+    font-size: 14px;
+    opacity: 0.8;
+  }
+
+  .pred-question {
+    text-align: center;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 20px;
+  }
+
+  .pred-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+
+  .pred-option {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid transparent;
+    border-radius: 12px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .pred-option:hover {
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  .pred-option.selected {
+    border-color: #ff6b35;
+    background: rgba(255, 107, 53, 0.2);
+  }
+
+  .pred-option-name {
+    font-weight: 500;
+  }
+
+  .pred-option-odds {
+    color: #ff6b35;
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  .pred-option-votes {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .vote-bar {
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    margin-top: 8px;
+    overflow: hidden;
+  }
+
+  .vote-fill {
+    height: 100%;
+    background: #ff6b35;
+    border-radius: 2px;
+    transition: width 0.3s;
+  }
+
+  .pred-submit {
+    width: 100%;
+    padding: 16px;
+    background: #ff6b35;
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    transition: transform 0.2s, opacity 0.2s;
+    margin-bottom: 20px;
+  }
+
+  .pred-submit:hover {
+    transform: translateY(-2px);
+  }
+
+  .pred-submit:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .pred-footer {
+    text-align: center;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .pred-timer {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 8px;
+  }
+
+  .pred-timer strong {
+    color: #ff6b35;
+  }
+
+  .pred-rules {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.4);
+  }
+
+  .pred-rules a {
+    color: #ff6b35;
+    text-decoration: none;
+  }
+
+  .pred-leaderboard {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .pred-leaderboard h4 {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+  }
+
+  .leader-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    font-size: 14px;
+  }
+
+  .leader-rank {
+    color: #fbbf24;
+    margin-right: 8px;
+  }
+
+  .leader-wallet {
+    color: rgba(255, 255, 255, 0.7);
+    font-family: monospace;
+  }
+
+  .leader-score {
+    color: #4ade80;
+    font-weight: 600;
+  }
+</style>
+
+<div class="prediction-widget">
+  <div class="pred-header">
+    <h2>Weekly Burn Prediction</h2>
+    <p>Guess who gets confirmed next!</p>
+  </div>
+
+  <div class="pred-prize">
+    <div class="pred-prize-label">This Week's Prize Pool</div>
+    <div class="pred-prize-value">10,000 LIST</div>
+    <div class="pred-prize-usd">~$43 USD</div>
+  </div>
+
+  <div class="pred-question">Who will be next on the Epstein list?</div>
+
+  <div class="pred-options" id="predOptions">
+    <div class="pred-option" onclick="selectOption(this, 'tony-blair')">
+      <div>
+        <div class="pred-option-name">Tony Blair</div>
+        <div class="pred-option-votes">124 votes (28%)</div>
+        <div class="vote-bar"><div class="vote-fill" style="width: 28%"></div></div>
+      </div>
+      <div class="pred-option-odds">13%</div>
+    </div>
+
+    <div class="pred-option" onclick="selectOption(this, 'oprah-winfrey')">
+      <div>
+        <div class="pred-option-name">Oprah Winfrey</div>
+        <div class="pred-option-votes">98 votes (22%)</div>
+        <div class="vote-bar"><div class="vote-fill" style="width: 22%"></div></div>
+      </div>
+      <div class="pred-option-odds">12%</div>
+    </div>
+
+    <div class="pred-option" onclick="selectOption(this, 'jamie-dimon')">
+      <div>
+        <div class="pred-option-name">Jamie Dimon</div>
+        <div class="pred-option-votes">87 votes (20%)</div>
+        <div class="vote-bar"><div class="vote-fill" style="width: 20%"></div></div>
+      </div>
+      <div class="pred-option-odds">13%</div>
+    </div>
+
+    <div class="pred-option" onclick="selectOption(this, 'david-koch')">
+      <div>
+        <div class="pred-option-name">David Koch</div>
+        <div class="pred-option-votes">76 votes (17%)</div>
+        <div class="vote-bar"><div class="vote-fill" style="width: 17%"></div></div>
+      </div>
+      <div class="pred-option-odds">14%</div>
+    </div>
+
+    <div class="pred-option" onclick="selectOption(this, 'ellen-degeneres')">
+      <div>
+        <div class="pred-option-name">Ellen DeGeneres</div>
+        <div class="pred-option-votes">58 votes (13%)</div>
+        <div class="vote-bar"><div class="vote-fill" style="width: 13%"></div></div>
+      </div>
+      <div class="pred-option-odds">13%</div>
+    </div>
+  </div>
+
+  <button class="pred-submit" id="submitBtn" disabled onclick="submitPrediction()">
+    Select a name to vote
+  </button>
+
+  <div class="pred-footer">
+    <div class="pred-timer">
+      Contest ends in <strong id="countdown">6d 14h 32m</strong>
+    </div>
+    <div class="pred-rules">
+      Winners split the prize pool. <a href="#">View rules</a>
+    </div>
+  </div>
+
+  <div class="pred-leaderboard">
+    <h4>Top Predictors (All Time)</h4>
+    <div class="leader-item">
+      <div><span class="leader-rank">1.</span> <span class="leader-wallet">7Fp2...8kNq</span></div>
+      <div class="leader-score">3 correct</div>
+    </div>
+    <div class="leader-item">
+      <div><span class="leader-rank">2.</span> <span class="leader-wallet">4Xm9...2pRs</span></div>
+      <div class="leader-score">2 correct</div>
+    </div>
+    <div class="leader-item">
+      <div><span class="leader-rank">3.</span> <span class="leader-wallet">9Yt3...6jKw</span></div>
+      <div class="leader-score">2 correct</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let selectedOption = null;
+
+  function selectOption(element, name) {
+    // Remove previous selection
+    document.querySelectorAll('.pred-option').forEach(opt => {
+      opt.classList.remove('selected');
+    });
+
+    // Select new option
+    element.classList.add('selected');
+    selectedOption = name;
+
+    // Enable submit button
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = false;
+    btn.textContent = 'Submit Prediction';
+  }
+
+  function submitPrediction() {
+    if (!selectedOption) return;
+
+    // In production, this would connect to your backend
+    alert(`Vote recorded for: ${selectedOption}\n\nIn the full version, this would:\n1. Verify wallet holds LIST\n2. Record vote on-chain or database\n3. Update vote counts`);
+
+    document.getElementById('submitBtn').textContent = 'Vote Submitted!';
+    document.getElementById('submitBtn').disabled = true;
+  }
+
+  // Countdown timer
+  function updateCountdown() {
+    const endDate = new Date();
+    endDate.setDate(endDate.getDate() + (7 - endDate.getDay())); // Next Sunday
+    endDate.setHours(23, 59, 59);
+
+    const now = new Date();
+    const diff = endDate - now;
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+    document.getElementById('countdown').textContent = `${days}d ${hours}h ${minutes}m`;
+  }
+
+  updateCountdown();
+  setInterval(updateCountdown, 60000);
+</script>

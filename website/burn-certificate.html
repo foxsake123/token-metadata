@@ -1,0 +1,408 @@
+<!--
+  LIST Token Burn Certificate Generator
+  Embed this in TypeDream using: /embed > Code
+
+  Features:
+  - Generate shareable burn certificates
+  - Shows name, burn %, tokens burned
+  - Download as image
+  - Share to Twitter
+-->
+
+<style>
+  .burn-cert-widget {
+    font-family: 'Inter', -apple-system, sans-serif;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  .cert-selector {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .cert-selector h3 {
+    color: white;
+    margin: 0 0 16px 0;
+    font-size: 18px;
+  }
+
+  .cert-selector select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    font-size: 16px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    cursor: pointer;
+  }
+
+  .cert-selector select option {
+    background: #1a1a2e;
+    color: white;
+  }
+
+  .certificate {
+    background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #0f0f1a 100%);
+    border: 3px solid #ff6b35;
+    border-radius: 16px;
+    padding: 32px;
+    text-align: center;
+    color: white;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .certificate::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 10px,
+      rgba(255, 107, 53, 0.03) 10px,
+      rgba(255, 107, 53, 0.03) 20px
+    );
+    pointer-events: none;
+  }
+
+  .cert-header {
+    position: relative;
+    z-index: 1;
+  }
+
+  .cert-logo {
+    font-size: 48px;
+    margin-bottom: 8px;
+  }
+
+  .cert-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #ff6b35;
+    margin: 0 0 4px 0;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+  }
+
+  .cert-subtitle {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0 0 24px 0;
+  }
+
+  .cert-body {
+    position: relative;
+    z-index: 1;
+  }
+
+  .cert-name {
+    font-size: 36px;
+    font-weight: 700;
+    margin: 0 0 8px 0;
+    color: white;
+  }
+
+  .cert-confirmed {
+    font-size: 14px;
+    color: #4ade80;
+    margin: 0 0 24px 0;
+  }
+
+  .cert-stats {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    margin-bottom: 24px;
+  }
+
+  .cert-stat {
+    text-align: center;
+  }
+
+  .cert-stat-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: #ff6b35;
+  }
+
+  .cert-stat-label {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+  }
+
+  .cert-tx {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 24px;
+  }
+
+  .cert-tx-label {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.4);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .cert-tx-hash {
+    font-family: monospace;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.7);
+    word-break: break-all;
+  }
+
+  .cert-footer {
+    position: relative;
+    z-index: 1;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 16px;
+  }
+
+  .cert-tagline {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.5);
+    margin: 0 0 8px 0;
+    font-style: italic;
+  }
+
+  .cert-url {
+    font-size: 16px;
+    color: #ff6b35;
+    font-weight: 600;
+  }
+
+  .cert-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+    justify-content: center;
+  }
+
+  .cert-btn {
+    padding: 12px 24px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: transform 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .cert-btn:hover {
+    transform: translateY(-2px);
+  }
+
+  .cert-btn.twitter {
+    background: #000;
+    color: white;
+  }
+
+  .cert-btn.download {
+    background: #ff6b35;
+    color: white;
+  }
+
+  .cert-date {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.4);
+  }
+
+  .cert-serial {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.4);
+    font-family: monospace;
+  }
+</style>
+
+<div class="burn-cert-widget">
+  <div class="cert-selector">
+    <h3>Select Burned Name</h3>
+    <select id="nameSelect" onchange="updateCertificate()">
+      <option value="prince-andrew">Prince Andrew - 5.0%</option>
+      <option value="bill-gates">Bill Gates - 4.5%</option>
+      <option value="alan-dershowitz">Alan Dershowitz - 3.5%</option>
+      <option value="bill-clinton">Bill Clinton - 3.5%</option>
+      <option value="stephen-hawking">Stephen Hawking - 3.0%</option>
+      <option value="donald-trump">Donald Trump - 2.0%</option>
+      <option value="michael-jackson">Michael Jackson - 2.0%</option>
+      <option value="barack-obama">Barack Obama - 1.5%</option>
+    </select>
+  </div>
+
+  <div class="certificate" id="certificate">
+    <div class="cert-serial" id="certSerial">#LIST-0001</div>
+    <div class="cert-date" id="certDate">Dec 26, 2024</div>
+
+    <div class="cert-header">
+      <div class="cert-logo">🔥</div>
+      <h2 class="cert-title">Burn Certificate</h2>
+      <p class="cert-subtitle">Official $LIST Token Destruction Record</p>
+    </div>
+
+    <div class="cert-body">
+      <h3 class="cert-name" id="certName">Prince Andrew</h3>
+      <p class="cert-confirmed">Confirmed on Epstein List via Polymarket</p>
+
+      <div class="cert-stats">
+        <div class="cert-stat">
+          <div class="cert-stat-value" id="certPercent">5.0%</div>
+          <div class="cert-stat-label">Supply Burned</div>
+        </div>
+        <div class="cert-stat">
+          <div class="cert-stat-value" id="certTokens">492K</div>
+          <div class="cert-stat-label">Tokens Destroyed</div>
+        </div>
+      </div>
+
+      <div class="cert-tx">
+        <div class="cert-tx-label">Burn Transaction</div>
+        <div class="cert-tx-hash" id="certTx">View on Solscan</div>
+      </div>
+    </div>
+
+    <div class="cert-footer">
+      <p class="cert-tagline">"The more names drop. The more $LIST pops."</p>
+      <div class="cert-url">list-coin.com</div>
+    </div>
+  </div>
+
+  <div class="cert-actions">
+    <button class="cert-btn twitter" onclick="shareTwitter()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      Share on X
+    </button>
+    <button class="cert-btn download" onclick="downloadCert()">
+      Download
+    </button>
+  </div>
+</div>
+
+<script>
+  const burnData = {
+    'prince-andrew': {
+      name: 'Prince Andrew',
+      percent: 5.0,
+      tokens: 492461,
+      serial: 'LIST-0001',
+      date: 'Dec 26, 2024',
+      tx: '4Yx8rKjh...9mNp'
+    },
+    'bill-gates': {
+      name: 'Bill Gates',
+      percent: 4.5,
+      tokens: 443215,
+      serial: 'LIST-0002',
+      date: 'Dec 26, 2024',
+      tx: '3Kp7mWxq...8nRs'
+    },
+    'alan-dershowitz': {
+      name: 'Alan Dershowitz',
+      percent: 3.5,
+      tokens: 344723,
+      serial: 'LIST-0003',
+      date: 'Dec 26, 2024',
+      tx: '5Zt9pQnr...2kMv'
+    },
+    'bill-clinton': {
+      name: 'Bill Clinton',
+      percent: 3.5,
+      tokens: 344723,
+      serial: 'LIST-0004',
+      date: 'Dec 26, 2024',
+      tx: '7Yr2sLpw...4jNx'
+    },
+    'stephen-hawking': {
+      name: 'Stephen Hawking',
+      percent: 3.0,
+      tokens: 295476,
+      serial: 'LIST-0005',
+      date: 'Dec 26, 2024',
+      tx: '2Wt6nKmq...6hPz'
+    },
+    'donald-trump': {
+      name: 'Donald Trump',
+      percent: 2.0,
+      tokens: 196984,
+      serial: 'LIST-0006',
+      date: 'Dec 26, 2024',
+      tx: '8Xs4rJnp...3gQw'
+    },
+    'michael-jackson': {
+      name: 'Michael Jackson',
+      percent: 2.0,
+      tokens: 196984,
+      serial: 'LIST-0007',
+      date: 'Dec 26, 2024',
+      tx: '6Vr1qHkm...5fRy'
+    },
+    'barack-obama': {
+      name: 'Barack Obama',
+      percent: 1.5,
+      tokens: 147738,
+      serial: 'LIST-0008',
+      date: 'Dec 26, 2024',
+      tx: '9Wu3tMnr...1eSx'
+    }
+  };
+
+  function formatTokens(num) {
+    if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+    if (num >= 1000) return (num / 1000).toFixed(0) + 'K';
+    return num.toString();
+  }
+
+  function updateCertificate() {
+    const select = document.getElementById('nameSelect');
+    const data = burnData[select.value];
+
+    document.getElementById('certName').textContent = data.name;
+    document.getElementById('certPercent').textContent = data.percent + '%';
+    document.getElementById('certTokens').textContent = formatTokens(data.tokens);
+    document.getElementById('certSerial').textContent = '#' + data.serial;
+    document.getElementById('certDate').textContent = data.date;
+    document.getElementById('certTx').textContent = data.tx;
+  }
+
+  function shareTwitter() {
+    const select = document.getElementById('nameSelect');
+    const data = burnData[select.value];
+
+    const text = `${data.name} was on the Epstein list.
+
+${data.percent}% of $LIST supply (${formatTokens(data.tokens)} tokens) permanently burned.
+
+The more names drop. The more $LIST pops.
+
+list-coin.com`;
+
+    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+    window.open(url, '_blank');
+  }
+
+  function downloadCert() {
+    // For a real implementation, use html2canvas
+    alert('Screenshot the certificate to save!\n\nTip: Use your browser\'s screenshot tool or a screen capture app.');
+  }
+
+  // Initialize
+  updateCertificate();
+</script>

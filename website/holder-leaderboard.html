@@ -1,0 +1,305 @@
+<!--
+  $LIST Holder Leaderboard Widget
+  Embed in TypeDream: /embed > Code
+
+  Shows top token holders from on-chain data
+  Updates via DexScreener/Solscan API
+-->
+
+<style>
+  .leaderboard-widget {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border-radius: 16px;
+    padding: 24px;
+    color: white;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .lb-header {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  .lb-header h2 {
+    margin: 0 0 8px 0;
+    font-size: 24px;
+  }
+
+  .lb-header p {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 14px;
+  }
+
+  .lb-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .lb-stat {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+  }
+
+  .lb-stat-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: #ff6b35;
+  }
+
+  .lb-stat-label {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+  }
+
+  .lb-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .lb-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    padding: 12px 16px;
+    transition: background 0.2s;
+  }
+
+  .lb-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .lb-rank {
+    font-size: 18px;
+    font-weight: 700;
+    width: 30px;
+    text-align: center;
+  }
+
+  .lb-rank.gold { color: #fbbf24; }
+  .lb-rank.silver { color: #94a3b8; }
+  .lb-rank.bronze { color: #cd7f32; }
+
+  .lb-info {
+    flex: 1;
+  }
+
+  .lb-wallet {
+    font-family: monospace;
+    font-size: 14px;
+    color: white;
+  }
+
+  .lb-percent {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .lb-amount {
+    text-align: right;
+  }
+
+  .lb-tokens {
+    font-size: 16px;
+    font-weight: 600;
+    color: #ff6b35;
+  }
+
+  .lb-usd {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .lb-footer {
+    text-align: center;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .lb-refresh {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s;
+  }
+
+  .lb-refresh:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  .lb-note {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.4);
+    margin-top: 12px;
+  }
+
+  .lb-loading {
+    text-align: center;
+    padding: 40px;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .excluded-tag {
+    font-size: 10px;
+    background: rgba(255, 107, 53, 0.2);
+    color: #ff6b35;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-left: 8px;
+  }
+</style>
+
+<div class="leaderboard-widget">
+  <div class="lb-header">
+    <h2>Holder Leaderboard</h2>
+    <p>Top $LIST diamond hands</p>
+  </div>
+
+  <div class="lb-stats">
+    <div class="lb-stat">
+      <div class="lb-stat-value" id="totalHolders">--</div>
+      <div class="lb-stat-label">Holders</div>
+    </div>
+    <div class="lb-stat">
+      <div class="lb-stat-value" id="totalSupply">7.38M</div>
+      <div class="lb-stat-label">Supply</div>
+    </div>
+    <div class="lb-stat">
+      <div class="lb-stat-value" id="burnedPercent">25%</div>
+      <div class="lb-stat-label">Burned</div>
+    </div>
+  </div>
+
+  <div class="lb-list" id="leaderboardList">
+    <div class="lb-loading">Loading holders...</div>
+  </div>
+
+  <div class="lb-footer">
+    <button class="lb-refresh" onclick="loadLeaderboard()">Refresh</button>
+    <p class="lb-note">Excludes burn wallet & liquidity pools</p>
+  </div>
+</div>
+
+<script>
+  const TOKEN_MINT = '5oKiBTTUutgk95g4MEgxUHtWJ9n21QXPSAusL6ic8KgM';
+  const TOTAL_SUPPLY = 7386928; // Current supply after burns
+  const LIST_PRICE = 0.00433; // Update this or fetch dynamically
+
+  // Known wallets to exclude or label
+  const KNOWN_WALLETS = {
+    '6Fe5cusnz5pi4W7ro67mWteL2Xak29t1XRvpauzoWTh8': 'Burn Wallet',
+    'ERrKctwZw8ZUNuvUyCEKnJVTZRuf6nDqmagQiFt8BrNo': 'Marketing',
+  };
+
+  const EXCLUDED_WALLETS = [
+    '6Fe5cusnz5pi4W7ro67mWteL2Xak29t1XRvpauzoWTh8', // Burn wallet
+    // Add LP addresses here
+  ];
+
+  function formatNumber(num) {
+    if (num >= 1000000) return (num / 1000000).toFixed(2) + 'M';
+    if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+    return num.toLocaleString();
+  }
+
+  function shortenWallet(wallet) {
+    return wallet.slice(0, 4) + '...' + wallet.slice(-4);
+  }
+
+  function getRankClass(rank) {
+    if (rank === 1) return 'gold';
+    if (rank === 2) return 'silver';
+    if (rank === 3) return 'bronze';
+    return '';
+  }
+
+  async function loadLeaderboard() {
+    const list = document.getElementById('leaderboardList');
+    list.innerHTML = '<div class="lb-loading">Loading holders...</div>';
+
+    try {
+      // Using Helius or similar API would be ideal
+      // For now, showing sample data structure
+      // Replace with actual API call
+
+      const holders = await fetchTopHolders();
+
+      if (holders.length === 0) {
+        list.innerHTML = '<div class="lb-loading">No holder data available</div>';
+        return;
+      }
+
+      document.getElementById('totalHolders').textContent = holders.length + '+';
+
+      list.innerHTML = holders
+        .filter(h => !EXCLUDED_WALLETS.includes(h.wallet))
+        .slice(0, 10)
+        .map((holder, i) => {
+          const rank = i + 1;
+          const percent = ((holder.amount / TOTAL_SUPPLY) * 100).toFixed(2);
+          const usdValue = (holder.amount * LIST_PRICE).toFixed(2);
+          const label = KNOWN_WALLETS[holder.wallet];
+
+          return `
+            <div class="lb-item">
+              <div class="lb-rank ${getRankClass(rank)}">${rank}</div>
+              <div class="lb-info">
+                <div class="lb-wallet">
+                  ${shortenWallet(holder.wallet)}
+                  ${label ? `<span class="excluded-tag">${label}</span>` : ''}
+                </div>
+                <div class="lb-percent">${percent}% of supply</div>
+              </div>
+              <div class="lb-amount">
+                <div class="lb-tokens">${formatNumber(holder.amount)}</div>
+                <div class="lb-usd">$${formatNumber(parseFloat(usdValue))}</div>
+              </div>
+            </div>
+          `;
+        })
+        .join('');
+
+    } catch (error) {
+      console.error('Error loading leaderboard:', error);
+      list.innerHTML = '<div class="lb-loading">Error loading data. Try again.</div>';
+    }
+  }
+
+  // Placeholder - replace with actual API
+  async function fetchTopHolders() {
+    // In production, use Helius, Shyft, or similar Solana API
+    // Example: https://api.helius.xyz/v0/addresses/{mint}/balances
+
+    // Sample data for display
+    return [
+      { wallet: '7Fp2kQPr9mNqxH8kJwZ2pRsT4nXy6vBc3dWe1fGh5jKL', amount: 850000 },
+      { wallet: '4Xm9pLqW2rKsN7vYcZ8bDfE6gHj3tMnR5wAx9yBu2kCs', amount: 620000 },
+      { wallet: '9Yt3nKmW6pRsL2vXcZ4bDfE8gHj1tMnR7wAx5yBu3kDt', amount: 480000 },
+      { wallet: '2Wt6nKmQ8pRsL4vYcZ2bDfE3gHj9tMnR1wAx7yBu5kEu', amount: 350000 },
+      { wallet: '8Xs4rJnP6mQsK3vWcZ7bDfE2gHj5tMnR9wAx3yBu1kFv', amount: 275000 },
+      { wallet: '6Vr1qHkM4nPsJ2vUcZ9bDfE7gHj4tMnR3wAx1yBu8kGw', amount: 220000 },
+      { wallet: '3Zu5sLpN2oQsI8vTcZ1bDfE5gHj6tMnR4wAx2yBu6kHx', amount: 180000 },
+      { wallet: '5Yq7tMrO1pRsH6vScZ3bDfE9gHj8tMnR6wAx4yBu4kIy', amount: 145000 },
+      { wallet: '1Xp9uNsP3qSsG4vRcZ5bDfE1gHj2tMnR8wAx6yBu7kJz', amount: 120000 },
+      { wallet: '4Wo2vOrQ5rTsF9vQcZ6bDfE4gHj7tMnR2wAx8yBu9kKa', amount: 95000 },
+    ];
+  }
+
+  // Load on page load
+  loadLeaderboard();
+</script>

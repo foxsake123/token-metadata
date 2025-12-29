@@ -1,0 +1,265 @@
+<!--
+  $LIST Press Kit Page
+  Add to TypeDream as a new page: /press
+  Or embed sections using: /embed > Code
+-->
+
+<style>
+  .press-kit {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    color: white;
+    padding: 40px 24px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .press-kit h1 {
+    font-size: 36px;
+    margin: 0 0 8px 0;
+  }
+
+  .press-kit .tagline {
+    color: #ff6b35;
+    font-size: 18px;
+    font-style: italic;
+    margin-bottom: 32px;
+  }
+
+  .press-section {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+
+  .press-section h2 {
+    color: #ff6b35;
+    font-size: 20px;
+    margin: 0 0 16px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 8px;
+  }
+
+  .quick-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 16px;
+  }
+
+  .fact-item {
+    text-align: center;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+  }
+
+  .fact-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: #ff6b35;
+  }
+
+  .fact-label {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+  }
+
+  .burn-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .burn-table th, .burn-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+  }
+
+  .burn-table th {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 12px;
+    text-transform: uppercase;
+  }
+
+  .links-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+  }
+
+  .link-btn {
+    display: block;
+    padding: 12px 16px;
+    background: rgba(255, 107, 53, 0.2);
+    border: 1px solid #ff6b35;
+    border-radius: 8px;
+    color: white;
+    text-decoration: none;
+    text-align: center;
+    font-weight: 500;
+    transition: background 0.2s;
+  }
+
+  .link-btn:hover {
+    background: rgba(255, 107, 53, 0.4);
+  }
+
+  .copy-box {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    padding: 16px;
+    font-family: monospace;
+    font-size: 13px;
+    word-break: break-all;
+    margin-top: 12px;
+  }
+
+  .brand-colors {
+    display: flex;
+    gap: 12px;
+    margin-top: 12px;
+  }
+
+  .color-swatch {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 4px;
+    font-size: 10px;
+    font-weight: 600;
+  }
+
+  .download-btn {
+    display: inline-block;
+    padding: 16px 32px;
+    background: #ff6b35;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    margin-top: 16px;
+  }
+
+  .quote-box {
+    font-size: 24px;
+    font-style: italic;
+    text-align: center;
+    padding: 24px;
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  .quote-box span {
+    color: #ff6b35;
+  }
+</style>
+
+<div class="press-kit">
+  <h1>Press Kit</h1>
+  <p class="tagline">"The more names drop. The more $LIST pops."</p>
+
+  <!-- Quick Facts -->
+  <div class="press-section">
+    <h2>Quick Facts</h2>
+    <div class="quick-facts">
+      <div class="fact-item">
+        <div class="fact-value">25%</div>
+        <div class="fact-label">Burned</div>
+      </div>
+      <div class="fact-item">
+        <div class="fact-value">8</div>
+        <div class="fact-label">Names Confirmed</div>
+      </div>
+      <div class="fact-item">
+        <div class="fact-value">7.38M</div>
+        <div class="fact-label">Current Supply</div>
+      </div>
+      <div class="fact-item">
+        <div class="fact-value">64%</div>
+        <div class="fact-label">Max Burn</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- What is LIST -->
+  <div class="press-section">
+    <h2>What is $LIST?</h2>
+    <p>$LIST is an event-driven burn token on Solana. Token burns are triggered by real-world events verified through Polymarket prediction markets.</p>
+    <p>When a name is confirmed on the Epstein list, a corresponding percentage of supply is permanently burned on-chain. No speculation. Just verification.</p>
+  </div>
+
+  <!-- Confirmed Burns -->
+  <div class="press-section">
+    <h2>Confirmed Burns</h2>
+    <table class="burn-table">
+      <tr>
+        <th>Name</th>
+        <th>Burn %</th>
+        <th>Tokens</th>
+      </tr>
+      <tr><td>Prince Andrew</td><td>5.0%</td><td>492,461</td></tr>
+      <tr><td>Bill Gates</td><td>4.5%</td><td>443,215</td></tr>
+      <tr><td>Alan Dershowitz</td><td>3.5%</td><td>344,723</td></tr>
+      <tr><td>Bill Clinton</td><td>3.5%</td><td>344,723</td></tr>
+      <tr><td>Stephen Hawking</td><td>3.0%</td><td>295,476</td></tr>
+      <tr><td>Donald Trump</td><td>2.0%</td><td>196,984</td></tr>
+      <tr><td>Michael Jackson</td><td>2.0%</td><td>196,984</td></tr>
+      <tr><td>Barack Obama</td><td>1.5%</td><td>147,738</td></tr>
+    </table>
+  </div>
+
+  <!-- Quote -->
+  <div class="press-section">
+    <div class="quote-box">
+      "Every burn is <span>permanent</span>. Every burn is <span>on-chain</span>. Every burn is <span>verified</span>."
+    </div>
+  </div>
+
+  <!-- Official Links -->
+  <div class="press-section">
+    <h2>Official Links</h2>
+    <div class="links-grid">
+      <a href="https://list-coin.com" class="link-btn" target="_blank">Website</a>
+      <a href="https://twitter.com/ListDrop" class="link-btn" target="_blank">Twitter</a>
+      <a href="https://t.me/listdropofficial" class="link-btn" target="_blank">Telegram</a>
+      <a href="https://discord.gg/s7MZfe8pRY" class="link-btn" target="_blank">Discord</a>
+      <a href="https://dexscreener.com/solana/5oKiBTTUutgk95g4MEgxUHtWJ9n21QXPSAusL6ic8KgM" class="link-btn" target="_blank">DexScreener</a>
+      <a href="https://raydium.io" class="link-btn" target="_blank">Raydium</a>
+    </div>
+  </div>
+
+  <!-- Contract -->
+  <div class="press-section">
+    <h2>Contract Address</h2>
+    <div class="copy-box">5oKiBTTUutgk95g4MEgxUHtWJ9n21QXPSAusL6ic8KgM</div>
+  </div>
+
+  <!-- Brand Assets -->
+  <div class="press-section">
+    <h2>Brand Assets</h2>
+    <p>Logo (PNG):</p>
+    <div class="copy-box">https://raw.githubusercontent.com/foxsake123/token-metadata/fresh-main/list-token.png</div>
+
+    <p style="margin-top: 16px;">Brand Colors:</p>
+    <div class="brand-colors">
+      <div class="color-swatch" style="background: #ff6b35;">#FF6B35</div>
+      <div class="color-swatch" style="background: #1a1a2e; border: 1px solid #333;">#1A1A2E</div>
+      <div class="color-swatch" style="background: #ff4444;">#FF4444</div>
+    </div>
+  </div>
+
+  <!-- Contact -->
+  <div class="press-section">
+    <h2>Media Contact</h2>
+    <p>For press inquiries, partnerships, or interviews:</p>
+    <div class="links-grid" style="margin-top: 12px;">
+      <a href="https://twitter.com/ListDrop" class="link-btn" target="_blank">DM on Twitter</a>
+      <a href="https://t.me/listdropofficial" class="link-btn" target="_blank">Telegram</a>
+    </div>
+  </div>
+</div>

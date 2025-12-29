@@ -1,33 +1,20 @@
 {
-  "ambassadors": [
-    {
-      "name": "Example Ambassador",
-      "wallet": "ExampleWa11etAddress...",
-      "twitter": "@example",
-      "tier": "bronze",
-      "joinedAt": "2025-12-28",
-      "monthlyReward": 5000,
-      "totalPaid": 0,
-      "active": true
-    }
-  ],
-  "raidContributions": [
-    {
-      "wallet": "ExampleWa11etAddress...",
-      "twitter": "@example",
-      "type": "reply",
-      "tweetUrl": "https://twitter.com/...",
-      "reward": 500,
-      "paid": false,
-      "submittedAt": "2025-12-28"
-    }
-  ],
-  "payoutHistory": [
-    {
-      "date": "2025-12-28",
-      "totalPaid": 0,
-      "txSignature": "",
-      "recipients": []
-    }
-  ]
+  "ambassadors": [],
+  "raidContributions": [],
+  "referrals": [],
+  "memeContest": {
+    "active": true,
+    "endDate": "2026-01-05",
+    "prizePool": 50000,
+    "entries": [],
+    "winners": []
+  },
+  "payoutHistory": [],
+  "settings": {
+    "weeklyCapTotal": 50000,
+    "weeklyCapPerPerson": 5000,
+    "referralHoldDays": 7,
+    "payoutDay": "Sunday",
+    "payoutTime": "18:00"
+  }
 }

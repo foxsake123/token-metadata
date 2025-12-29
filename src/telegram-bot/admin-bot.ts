@@ -108,10 +108,13 @@ Commands:
 👑 ADMIN COMMANDS:
 /addambassador <wallet> <twitter> <tier>
 /addraid <wallet> <twitter> <type> <url>
+/addref <new_wallet> <referrer_wallet> <amount>
+/meme <wallet> <place> - Log meme winner (1st/2nd/3rd)
 /payouts - Preview pending payouts
 /ambassadors - List ambassadors
 /raids - List unpaid raids
-/meme <wallet> <amount> - Log meme winner
+/refs - List pending referrals
+/status - Full rewards status
 /myid - Show your user ID
 `;
   }
@@ -411,6 +414,121 @@ bot.onText(/\/payouts$/, (msg: Message) => {
   }
 
   message += `\n\nNext payout: Sunday 6PM`;
+
+  bot.sendMessage(msg.chat.id, message);
+});
+
+// Add referral
+bot.onText(/\/addref (.+)/, (msg: Message, match: RegExpExecArray | null) => {
+  if (!isAdmin(msg)) {
+    bot.sendMessage(msg.chat.id, '❌ Admin only');
+    return;
+  }
+
+  const args = match?.[1]?.split(' ');
+  if (!args || args.length < 3) {
+    bot.sendMessage(msg.chat.id, 'Usage: /addref <new_wallet> <referrer_wallet> <purchase_amount>\nExample: /addref 7Fp2... 8Xm3... 50000');
+    return;
+  }
+
+  const [newWallet, referrerWallet, amountStr] = args;
+  const amount = parseInt(amountStr);
+
+  if (isNaN(amount) || amount < 10000) {
+    bot.sendMessage(msg.chat.id, '❌ Purchase amount must be at least 10,000 LIST');
+    return;
+  }
+
+  // Calculate rewards based on tier
+  let newReward = 500, referrerReward = 1000;
+  if (amount >= 100000) {
+    newReward = 2500; referrerReward = 5000;
+  } else if (amount >= 50000) {
+    newReward = 1500; referrerReward = 3000;
+  }
+
+  const holdUntil = new Date();
+  holdUntil.setDate(holdUntil.getDate() + 7);
+
+  const data = loadRewards();
+  if (!data.referrals) data.referrals = [];
+
+  data.referrals.push({
+    newWallet,
+    newTwitter: 'pending',
+    referrerWallet,
+    referrerTwitter: 'pending',
+    purchaseAmount: amount,
+    newReward,
+    referrerReward,
+    txSignature: '',
+    submittedAt: new Date().toISOString().split('T')[0],
+    holdUntil: holdUntil.toISOString().split('T')[0],
+    paid: false,
+  });
+  saveRewards(data);
+
+  bot.sendMessage(msg.chat.id, `✅ Referral logged!\n\n🆕 New holder: ${newWallet.slice(0, 8)}... (+${newReward} LIST)\n🎁 Referrer: ${referrerWallet.slice(0, 8)}... (+${referrerReward} LIST)\n💰 Purchase: ${amount.toLocaleString()} LIST\n⏳ Pays out: ${holdUntil.toISOString().split('T')[0]}`);
+});
+
+// List pending referrals
+bot.onText(/\/refs$/, (msg: Message) => {
+  if (!isAdmin(msg)) {
+    bot.sendMessage(msg.chat.id, '❌ Admin only');
+    return;
+  }
+
+  const data = loadRewards();
+  const pending = (data.referrals || []).filter((r: any) => !r.paid);
+  const today = new Date().toISOString().split('T')[0];
+
+  if (pending.length === 0) {
+    bot.sendMessage(msg.chat.id, '📋 No pending referrals');
+    return;
+  }
+
+  let message = `🎁 PENDING REFERRALS (${pending.length})\n\n`;
+  pending.forEach((r: any, i: number) => {
+    const ready = r.holdUntil <= today ? '✅' : '⏳';
+    message += `${i + 1}. ${ready} ${r.newWallet.slice(0, 6)}... → ${r.referrerWallet.slice(0, 6)}...\n`;
+    message += `   ${r.purchaseAmount.toLocaleString()} LIST | Pays: ${r.holdUntil}\n\n`;
+  });
+
+  bot.sendMessage(msg.chat.id, message);
+});
+
+// Full status
+bot.onText(/\/status$/, (msg: Message) => {
+  if (!isAdmin(msg)) {
+    bot.sendMessage(msg.chat.id, '❌ Admin only');
+    return;
+  }
+
+  const data = loadRewards();
+  const today = new Date().toISOString().split('T')[0];
+
+  const activeAmb = data.ambassadors.filter((a: any) => a.active);
+  const unpaidRaids = data.raidContributions.filter((r: any) => !r.paid);
+  const pendingRefs = (data.referrals || []).filter((r: any) => !r.paid);
+  const readyRefs = pendingRefs.filter((r: any) => r.holdUntil <= today);
+  const memeWinners = (data.memeContest?.winners || []).filter((w: any) => !w.paid);
+
+  const ambTotal = activeAmb.reduce((s: number, a: any) => s + Math.floor(a.monthlyReward / 4), 0);
+  const raidTotal = unpaidRaids.reduce((s: number, r: any) => s + r.reward, 0);
+  const refTotal = readyRefs.reduce((s: number, r: any) => s + r.newReward + r.referrerReward, 0);
+  const memeTotal = memeWinners.reduce((s: number, w: any) => s + w.reward, 0);
+
+  const grandTotal = ambTotal + raidTotal + refTotal + memeTotal;
+
+  let message = `📊 REWARDS STATUS\n\n`;
+  message += `👑 Ambassadors: ${activeAmb.length} (${ambTotal.toLocaleString()} LIST/wk)\n`;
+  message += `⚔️ Raids: ${unpaidRaids.length} unpaid (${raidTotal.toLocaleString()} LIST)\n`;
+  message += `🎁 Referrals: ${readyRefs.length} ready / ${pendingRefs.length} total (${refTotal.toLocaleString()} LIST)\n`;
+  message += `🎨 Meme: ${memeWinners.length} unpaid (${memeTotal.toLocaleString()} LIST)\n`;
+  message += `━━━━━━━━━━━━━━━━━━\n`;
+  message += `💰 Next payout: ${grandTotal.toLocaleString()} LIST\n`;
+  message += `🔒 Weekly cap: 50,000 LIST\n`;
+  message += `📅 Payout: Sunday 6PM`;
 
   bot.sendMessage(msg.chat.id, message);
 });

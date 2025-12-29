@@ -54,6 +54,7 @@
     "@ava/typescript": "^1.1.1",
     "@istanbuljs/nyc-config-typescript": "^1.0.1",
     "@types/node": "^15.0.2",
+    "@types/node-telegram-bot-api": "^0.64.13",
     "@typescript-eslint/eslint-plugin": "^4.0.1",
     "@typescript-eslint/parser": "^4.0.1",
     "ava": "^3.12.1",
@@ -116,6 +117,7 @@
     "@solana/web3.js": "^1.95.0",
     "bs58": "^5.0.0",
     "cross-fetch": "3.0.6",
-    "dotenv": "^17.2.3"
+    "dotenv": "^17.2.3",
+    "node-telegram-bot-api": "^0.67.0"
   }
 }

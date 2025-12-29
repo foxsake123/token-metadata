@@ -1,0 +1,13 @@
+{
+  "reminders": [
+    {
+      "id": "rewards-trial-review",
+      "title": "Review Rewards Program (1 week trial)",
+      "dueDate": "2026-01-04",
+      "description": "Weekly rewards trial period ends. Review payouts in data/rewards.log and decide whether to continue.",
+      "action": "Run: npx ts-node scripts/process-rewards.ts --dry-run to see what would be paid",
+      "createdAt": "2025-12-28",
+      "completed": false
+    }
+  ]
+}

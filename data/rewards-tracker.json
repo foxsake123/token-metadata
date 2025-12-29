@@ -1,0 +1,33 @@
+{
+  "ambassadors": [
+    {
+      "name": "Example Ambassador",
+      "wallet": "ExampleWa11etAddress...",
+      "twitter": "@example",
+      "tier": "bronze",
+      "joinedAt": "2025-12-28",
+      "monthlyReward": 5000,
+      "totalPaid": 0,
+      "active": true
+    }
+  ],
+  "raidContributions": [
+    {
+      "wallet": "ExampleWa11etAddress...",
+      "twitter": "@example",
+      "type": "reply",
+      "tweetUrl": "https://twitter.com/...",
+      "reward": 500,
+      "paid": false,
+      "submittedAt": "2025-12-28"
+    }
+  ],
+  "payoutHistory": [
+    {
+      "date": "2025-12-28",
+      "totalPaid": 0,
+      "txSignature": "",
+      "recipients": []
+    }
+  ]
+}

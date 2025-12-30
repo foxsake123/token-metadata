@@ -36,6 +36,8 @@ Happy to chat more. Here's our site: list-coin.com
 
 ## 2. Meme Contest
 
+**Status:** ACTIVE - Posted to Twitter Dec 29, ends Jan 5
+
 ### Rules
 - **Duration:** 1 week
 - **Prize Pool:** 50,000 LIST (~$215)
@@ -93,6 +95,8 @@ Show us what you got! 🔥
 
 ## 3. Burn Alert Telegram Bot
 
+**Status:** DEPLOYED - Running in @listdropofficial
+
 ### Features
 - Announces burns in real-time
 - Shows new confirmations from Polymarket
@@ -137,6 +141,8 @@ Mint an NFT for each executed burn as a collectible/proof
 
 ## 5. Ambassador Program
 
+**Status:** ACTIVE - Posted to Telegram Dec 29
+
 ### Tiers
 | Tier | Requirements | Rewards |
 |------|--------------|---------|
@@ -150,6 +156,9 @@ Mint an NFT for each executed burn as a collectible/proof
 - Onboard new members
 - Report FUD/scams
 
+### Current Candidates
+- **EMMA** - Reached out Dec 29, awaiting vetting (Twitter, experience)
+
 ### Application
 DM @ListDrop on Twitter or Telegram with:
 1. Your wallet address
@@ -159,6 +168,8 @@ DM @ListDrop on Twitter or Telegram with:
 ---
 
 ## 6. Raid Squad
+
+**Status:** ACTIVE - Posted to Telegram Dec 29
 
 ### Structure
 - **Raid Captain:** Coordinates targets

@@ -1,0 +1,546 @@
+<!--
+  $LIST Whitepaper
+  Embed in TypeDream: /embed > Code
+
+  Full whitepaper for the $LIST token
+-->
+
+<style>
+  .whitepaper-widget {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border-radius: 16px;
+    padding: 32px;
+    color: white;
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+
+  .wp-header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .wp-header h1 {
+    margin: 0 0 8px 0;
+    font-size: 36px;
+    color: #ff6b35;
+  }
+
+  .wp-header .subtitle {
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0 0 16px 0;
+  }
+
+  .wp-header .version {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .wp-section {
+    margin-bottom: 40px;
+  }
+
+  .wp-section h2 {
+    color: #ff6b35;
+    font-size: 24px;
+    margin: 0 0 16px 0;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255, 107, 53, 0.3);
+  }
+
+  .wp-section h3 {
+    color: white;
+    font-size: 18px;
+    margin: 24px 0 12px 0;
+  }
+
+  .wp-section p {
+    color: rgba(255, 255, 255, 0.85);
+    margin: 0 0 16px 0;
+  }
+
+  .wp-section ul {
+    color: rgba(255, 255, 255, 0.85);
+    margin: 0 0 16px 0;
+    padding-left: 24px;
+  }
+
+  .wp-section li {
+    margin-bottom: 8px;
+  }
+
+  .wp-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+  }
+
+  .wp-table th,
+  .wp-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .wp-table th {
+    color: #ff6b35;
+    font-weight: 600;
+    background: rgba(255, 107, 53, 0.1);
+  }
+
+  .wp-table td {
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  .wp-highlight {
+    background: rgba(255, 107, 53, 0.1);
+    border-left: 3px solid #ff6b35;
+    padding: 16px 20px;
+    margin: 20px 0;
+    border-radius: 0 8px 8px 0;
+  }
+
+  .wp-highlight p {
+    margin: 0;
+    color: white;
+    font-style: italic;
+  }
+
+  .wp-code {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 16px;
+    border-radius: 8px;
+    font-family: monospace;
+    font-size: 14px;
+    color: #ff6b35;
+    overflow-x: auto;
+  }
+
+  .wp-toc {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 40px;
+  }
+
+  .wp-toc h3 {
+    margin: 0 0 16px 0;
+    color: white;
+  }
+
+  .wp-toc ol {
+    margin: 0;
+    padding-left: 24px;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .wp-toc li {
+    margin-bottom: 8px;
+  }
+
+  .wp-toc a {
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+  }
+
+  .wp-toc a:hover {
+    color: #ff6b35;
+  }
+
+  .wp-links {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 20px;
+  }
+
+  .wp-link {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 12px 16px;
+    border-radius: 8px;
+    color: white;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+
+  .wp-link:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .wp-link-label {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+    display: block;
+  }
+
+  .wp-link-value {
+    font-size: 14px;
+    color: #ff6b35;
+    word-break: break-all;
+  }
+
+  .wp-footer {
+    text-align: center;
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .wp-footer p {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 12px;
+  }
+
+  .wp-download {
+    display: inline-block;
+    background: #ff6b35;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    margin-top: 16px;
+    transition: background 0.2s;
+  }
+
+  .wp-download:hover {
+    background: #e55a2b;
+  }
+
+  @media (max-width: 600px) {
+    .whitepaper-widget {
+      padding: 20px;
+    }
+
+    .wp-header h1 {
+      font-size: 28px;
+    }
+
+    .wp-links {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<div class="whitepaper-widget">
+  <div class="wp-header">
+    <h1>$LIST Whitepaper</h1>
+    <p class="subtitle">Event-Driven Burn Token on Solana</p>
+    <p class="version">Version 1.0 | December 2024</p>
+  </div>
+
+  <!-- Abstract -->
+  <div class="wp-section">
+    <h2>Abstract</h2>
+    <p>$LIST is a deflationary token on Solana where supply burns are triggered by real-world events verified through prediction markets. When names are publicly confirmed on the Epstein document list via Polymarket resolution, corresponding token burns execute automatically on-chain.</p>
+    <div class="wp-highlight">
+      <p>"We don't decide who's guilty. The documents do. We don't control the burns. The markets do."</p>
+    </div>
+  </div>
+
+  <!-- Table of Contents -->
+  <div class="wp-toc">
+    <h3>Contents</h3>
+    <ol>
+      <li><a href="#introduction">Introduction</a></li>
+      <li><a href="#problem">The Problem</a></li>
+      <li><a href="#solution">The Solution</a></li>
+      <li><a href="#tokenomics">Tokenomics</a></li>
+      <li><a href="#mechanism">Burn Mechanism</a></li>
+      <li><a href="#verification">Verification System</a></li>
+      <li><a href="#status">Current Status</a></li>
+      <li><a href="#future">Future Events</a></li>
+      <li><a href="#risks">Risk Factors</a></li>
+    </ol>
+  </div>
+
+  <!-- Introduction -->
+  <div class="wp-section" id="introduction">
+    <h2>1. Introduction</h2>
+    <p>In January 2024, a federal judge ordered the release of court documents naming individuals connected to Jeffrey Epstein. This unprecedented disclosure created a unique intersection of public interest, verifiable information, and prediction markets.</p>
+    <p>Polymarket, the leading decentralized prediction platform, created markets for each potential name: "Will [Name] be confirmed on the Epstein list?"</p>
+    <p>$LIST was created to bridge these prediction markets with tokenomics. Each confirmed name triggers a permanent, on-chain token burn proportional to that individual's public profile.</p>
+  </div>
+
+  <!-- Problem -->
+  <div class="wp-section" id="problem">
+    <h2>2. The Problem</h2>
+
+    <h3>Arbitrary Tokenomics</h3>
+    <p>Most deflationary tokens implement burns based on arbitrary triggers: time-based schedules, volume milestones, or team decisions. These mechanisms lack transparency and can be manipulated.</p>
+
+    <h3>Disconnection from Reality</h3>
+    <p>Cryptocurrency markets often operate in isolation from real-world events, creating purely speculative assets with no external validation mechanism.</p>
+
+    <h3>Trust Requirements</h3>
+    <p>Traditional burn mechanisms require trusting a team to execute burns as promised. This introduces counterparty risk.</p>
+  </div>
+
+  <!-- Solution -->
+  <div class="wp-section" id="solution">
+    <h2>3. The Solution</h2>
+
+    <h3>Event-Driven Burns</h3>
+    <p>$LIST ties burn events to externally verifiable outcomes: real court documents, prediction market resolutions, on-chain execution, and public transaction records.</p>
+
+    <h3>Trustless Verification</h3>
+    <p>Polymarket serves as a decentralized oracle with community-driven resolution and public audit trails.</p>
+
+    <h3>Permanent Deflation</h3>
+    <p>All burned tokens are sent to a verified burn wallet with no recovery possible, verifiable on Solscan.</p>
+  </div>
+
+  <!-- Tokenomics -->
+  <div class="wp-section" id="tokenomics">
+    <h2>4. Tokenomics</h2>
+
+    <h3>Supply</h3>
+    <table class="wp-table">
+      <tr>
+        <th>Metric</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>Initial Supply</td>
+        <td>9,849,232 LIST</td>
+      </tr>
+      <tr>
+        <td>Current Supply</td>
+        <td>7,386,928 LIST</td>
+      </tr>
+      <tr>
+        <td>Burned to Date</td>
+        <td>2,462,304 LIST (25%)</td>
+      </tr>
+      <tr>
+        <td>Maximum Burn</td>
+        <td>64% of initial supply</td>
+      </tr>
+    </table>
+
+    <h3>Distribution</h3>
+    <ul>
+      <li><strong>No presale:</strong> Fair launch</li>
+      <li><strong>No team allocation:</strong> All tokens in circulation</li>
+      <li><strong>No mint function:</strong> Supply can only decrease</li>
+      <li><strong>Liquidity:</strong> Locked on Raydium</li>
+    </ul>
+
+    <h3>Token Details</h3>
+    <table class="wp-table">
+      <tr>
+        <th>Property</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>Name</td>
+        <td>List Drop</td>
+      </tr>
+      <tr>
+        <td>Symbol</td>
+        <td>LIST</td>
+      </tr>
+      <tr>
+        <td>Chain</td>
+        <td>Solana</td>
+      </tr>
+      <tr>
+        <td>Decimals</td>
+        <td>9</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Burn Mechanism -->
+  <div class="wp-section" id="mechanism">
+    <h2>5. Burn Mechanism</h2>
+
+    <h3>Executed Burns (8 Names - 25%)</h3>
+    <table class="wp-table">
+      <tr>
+        <th>Name</th>
+        <th>Burn %</th>
+        <th>Tokens Burned</th>
+      </tr>
+      <tr>
+        <td>Prince Andrew</td>
+        <td>5.0%</td>
+        <td>492,461</td>
+      </tr>
+      <tr>
+        <td>Bill Gates</td>
+        <td>4.5%</td>
+        <td>443,215</td>
+      </tr>
+      <tr>
+        <td>Alan Dershowitz</td>
+        <td>3.5%</td>
+        <td>344,723</td>
+      </tr>
+      <tr>
+        <td>Bill Clinton</td>
+        <td>3.5%</td>
+        <td>344,723</td>
+      </tr>
+      <tr>
+        <td>Stephen Hawking</td>
+        <td>3.0%</td>
+        <td>295,476</td>
+      </tr>
+      <tr>
+        <td>Donald Trump</td>
+        <td>2.0%</td>
+        <td>196,984</td>
+      </tr>
+      <tr>
+        <td>Michael Jackson</td>
+        <td>2.0%</td>
+        <td>196,984</td>
+      </tr>
+      <tr>
+        <td>Barack Obama</td>
+        <td>1.5%</td>
+        <td>147,738</td>
+      </tr>
+    </table>
+
+    <h3>Burn Execution Process</h3>
+    <ol>
+      <li>Polymarket market resolves "YES" for a name</li>
+      <li>Team verifies resolution via official Polymarket API</li>
+      <li>Burn transaction is executed on-chain</li>
+      <li>Transaction is announced with proof link</li>
+      <li>Supply updates reflected across all platforms</li>
+    </ol>
+  </div>
+
+  <!-- Verification -->
+  <div class="wp-section" id="verification">
+    <h2>6. Verification System</h2>
+
+    <h3>Polymarket as Oracle</h3>
+    <p>Polymarket provides decentralized price discovery, community-driven resolution, public audit trails, and API access for verification.</p>
+
+    <h3>On-Chain Proof</h3>
+    <p>Every burn includes a Solscan transaction link, timestamp, amount burned, and destination (burn wallet).</p>
+
+    <h3>Transparency</h3>
+    <p>All burn configurations are published on GitHub, the website burn schedule, Telegram announcements, and Twitter updates.</p>
+  </div>
+
+  <!-- Status -->
+  <div class="wp-section" id="status">
+    <h2>7. Current Status</h2>
+
+    <table class="wp-table">
+      <tr>
+        <th>Metric</th>
+        <th>Status</th>
+      </tr>
+      <tr>
+        <td>Supply Burned</td>
+        <td>25%</td>
+      </tr>
+      <tr>
+        <td>Names Confirmed</td>
+        <td>8</td>
+      </tr>
+      <tr>
+        <td>Names Pending</td>
+        <td>17</td>
+      </tr>
+      <tr>
+        <td>Raydium</td>
+        <td>Listed</td>
+      </tr>
+      <tr>
+        <td>Jupiter</td>
+        <td>Pending</td>
+      </tr>
+      <tr>
+        <td>CoinGecko</td>
+        <td>Pending</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Future Events -->
+  <div class="wp-section" id="future">
+    <h2>8. Future Events</h2>
+
+    <h3>Epstein List Deadline</h3>
+    <p><strong>December 31, 2025</strong> - 17 additional names tracked with ~19% remaining burn allocation.</p>
+
+    <h3>Diddy Trial (May 2025)</h3>
+    <p>Secondary burn event tied to the Sean "Diddy" Combs trial verdict:</p>
+    <table class="wp-table">
+      <tr>
+        <th>Outcome</th>
+        <th>Burn Allocation</th>
+      </tr>
+      <tr>
+        <td>No Prison Time</td>
+        <td>8%</td>
+      </tr>
+      <tr>
+        <td>1-10 Years</td>
+        <td>6%</td>
+      </tr>
+      <tr>
+        <td>11-25 Years</td>
+        <td>5%</td>
+      </tr>
+      <tr>
+        <td>Life Sentence</td>
+        <td>5%</td>
+      </tr>
+    </table>
+    <p>Inverse probability burns: unlikely outcomes trigger larger burns.</p>
+  </div>
+
+  <!-- Risks -->
+  <div class="wp-section" id="risks">
+    <h2>9. Risk Factors</h2>
+    <ul>
+      <li><strong>Market Risks:</strong> Cryptocurrency volatility, liquidity constraints, exchange listing uncertainty</li>
+      <li><strong>Event Risks:</strong> Polymarket resolution disputes, document release delays, legal uncertainties</li>
+      <li><strong>Technical Risks:</strong> Smart contract limitations, Solana network issues, oracle reliability</li>
+      <li><strong>Regulatory Risks:</strong> Evolving cryptocurrency regulations, prediction market legality</li>
+    </ul>
+  </div>
+
+  <!-- Links -->
+  <div class="wp-section">
+    <h2>Links</h2>
+    <div class="wp-links">
+      <a href="https://list-coin.com" target="_blank" class="wp-link">
+        <span class="wp-link-label">Website</span>
+        <span class="wp-link-value">list-coin.com</span>
+      </a>
+      <a href="https://twitter.com/ListDrop" target="_blank" class="wp-link">
+        <span class="wp-link-label">Twitter</span>
+        <span class="wp-link-value">@ListDrop</span>
+      </a>
+      <a href="https://t.me/listdropofficial" target="_blank" class="wp-link">
+        <span class="wp-link-label">Telegram</span>
+        <span class="wp-link-value">@listdropofficial</span>
+      </a>
+      <a href="https://solscan.io/token/5oKiBTTUutgk95g4MEgxUHtWJ9n21QXPSAusL6ic8KgM" target="_blank" class="wp-link">
+        <span class="wp-link-label">Contract</span>
+        <span class="wp-link-value">5oKiB...6Pf29</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="wp-footer">
+    <p>This whitepaper is for informational purposes only and does not constitute financial advice.<br>Always conduct your own research before investing.</p>
+    <a href="https://github.com/foxsake123/token-metadata/blob/fresh-main/docs/WHITEPAPER.md" target="_blank" class="wp-download">View Full Document on GitHub</a>
+    <p style="margin-top: 24px;">Last updated: December 30, 2024</p>
+  </div>
+</div>

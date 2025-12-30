@@ -7,12 +7,16 @@
  * /burns, /pending, /stats, /price, /about
  *
  * ADMIN COMMANDS (only work for ADMIN_USER_ID):
- * /addambassador <wallet> <twitter> <tier>
- * /addraid <wallet> <twitter> <type> <url>
+ * /register <wallet> <twitter> - Register new person
+ * /raid @twitter <url> [thread|viral] - Quick log raid (looks up wallet)
+ * /addambassador <wallet> <twitter> <tier> - Add with tier (bronze/silver/gold)
+ * /addref <new_wallet> <referrer_wallet> <amount> - Log referral
+ * /meme <wallet> <amount> - Log meme contest winner
  * /payouts - Preview pending payouts
  * /ambassadors - List all ambassadors
  * /raids - List unpaid raid contributions
- * /meme <wallet> <amount> - Log meme contest winner
+ * /refs - List pending referrals
+ * /status - Full rewards status
  *
  * Run: npx ts-node src/telegram-bot/admin-bot.ts
  */
@@ -106,16 +110,16 @@ Commands:
   if (isAdmin(msg)) {
     welcome += `
 👑 ADMIN COMMANDS:
+/register <wallet> <twitter> - Register new person
+/raid @twitter <url> [thread|viral] - Quick log raid
 /addambassador <wallet> <twitter> <tier>
-/addraid <wallet> <twitter> <type> <url>
 /addref <new_wallet> <referrer_wallet> <amount>
-/meme <wallet> <place> - Log meme winner (1st/2nd/3rd)
+/meme <wallet> <amount> - Log meme winner
 /payouts - Preview pending payouts
 /ambassadors - List ambassadors
 /raids - List unpaid raids
 /refs - List pending referrals
 /status - Full rewards status
-/myid - Show your user ID
 `;
   }
 
@@ -224,7 +228,38 @@ bot.onText(/\/myid/, (msg: Message) => {
   bot.sendMessage(chatId, `Your Telegram User ID: ${userId}\n\nAdd this to .env as TELEGRAM_ADMIN_ID to enable admin commands.`);
 });
 
-// Add ambassador
+// Register ambassador (simple - no tier yet)
+bot.onText(/\/register (.+)/, (msg: Message, match: RegExpExecArray | null) => {
+  if (!isAdmin(msg)) {
+    bot.sendMessage(msg.chat.id, '❌ Admin only');
+    return;
+  }
+
+  const args = match?.[1]?.split(' ');
+  if (!args || args.length < 2) {
+    bot.sendMessage(msg.chat.id, 'Usage: /register <wallet> <twitter>');
+    return;
+  }
+
+  const [wallet, twitter] = args;
+
+  const data = loadRewards();
+  data.ambassadors.push({
+    name: twitter.replace('@', ''),
+    wallet,
+    twitter: twitter.startsWith('@') ? twitter : `@${twitter}`,
+    tier: 'pending',
+    joinedAt: new Date().toISOString().split('T')[0],
+    monthlyReward: 0,
+    totalPaid: 0,
+    active: true,
+  });
+  saveRewards(data);
+
+  bot.sendMessage(msg.chat.id, `✅ Ambassador registered!\n\n👤 ${twitter}\n🔑 ${wallet.slice(0, 8)}...\n📋 Status: Pending (no tier yet)\n\nUse /addambassador to assign a tier later.`);
+});
+
+// Add ambassador with tier
 bot.onText(/\/addambassador (.+)/, (msg: Message, match: RegExpExecArray | null) => {
   if (!isAdmin(msg)) {
     bot.sendMessage(msg.chat.id, '❌ Admin only');
@@ -261,7 +296,57 @@ bot.onText(/\/addambassador (.+)/, (msg: Message, match: RegExpExecArray | null)
   bot.sendMessage(msg.chat.id, `✅ Ambassador added!\n\n👤 ${twitter}\n💰 ${tier} (${rewards[tier]} LIST/month)\n🔑 ${wallet.slice(0, 8)}...`);
 });
 
-// Add raid contribution
+// Quick raid - lookup wallet by twitter handle
+bot.onText(/\/raid (.+)/, (msg: Message, match: RegExpExecArray | null) => {
+  if (!isAdmin(msg)) {
+    bot.sendMessage(msg.chat.id, '❌ Admin only');
+    return;
+  }
+
+  const args = match?.[1]?.split(' ');
+  if (!args || args.length < 2) {
+    bot.sendMessage(msg.chat.id, 'Usage: /raid @twitter <url> [thread|viral]\nDefaults to reply (500 LIST)');
+    return;
+  }
+
+  const [twitter, url, typeArg] = args;
+  const type = typeArg || 'reply';
+  const rewardAmounts: Record<string, number> = { reply: 500, thread: 1000, viral: 2000 };
+
+  if (!rewardAmounts[type]) {
+    bot.sendMessage(msg.chat.id, '❌ Type must be: reply, thread, or viral');
+    return;
+  }
+
+  // Look up wallet by twitter handle
+  const data = loadRewards();
+  const handle = twitter.startsWith('@') ? twitter.toLowerCase() : `@${twitter.toLowerCase()}`;
+
+  const ambassador = data.ambassadors.find((a: any) =>
+    a.twitter.toLowerCase() === handle ||
+    a.name.toLowerCase() === handle.replace('@', '')
+  );
+
+  if (!ambassador) {
+    bot.sendMessage(msg.chat.id, `❌ ${twitter} not registered.\n\nRegister first: /register <wallet> ${twitter}`);
+    return;
+  }
+
+  data.raidContributions.push({
+    wallet: ambassador.wallet,
+    twitter: ambassador.twitter,
+    type,
+    tweetUrl: url,
+    reward: rewardAmounts[type],
+    paid: false,
+    submittedAt: new Date().toISOString().split('T')[0],
+  });
+  saveRewards(data);
+
+  bot.sendMessage(msg.chat.id, `✅ Raid logged!\n\n👤 ${ambassador.twitter}\n📝 ${type} (+${rewardAmounts[type]} LIST)\n🔗 ${url.slice(0, 40)}...`);
+});
+
+// Add raid contribution (full version with wallet)
 bot.onText(/\/addraid (.+)/, (msg: Message, match: RegExpExecArray | null) => {
   if (!isAdmin(msg)) {
     bot.sendMessage(msg.chat.id, '❌ Admin only');

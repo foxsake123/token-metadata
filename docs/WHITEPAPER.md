@@ -191,8 +191,7 @@ All burn configurations are published:
 
 - **25%** of supply burned
 - **8** names confirmed
-- **17** names pending (Epstein list)
-- **1** additional event tracked (Diddy trial)
+- **17** names pending
 
 ### 7.2 Listings
 
@@ -219,20 +218,7 @@ All burn configurations are published:
 - **Remaining allocation:** ~19%
 - **Tracked names:** 17
 
-### 8.2 Diddy Trial (May 2025)
-
-A secondary burn event tied to the Sean "Diddy" Combs trial verdict:
-
-| Outcome | Burn Allocation |
-|---------|-----------------|
-| No Prison Time | 8% |
-| 1-10 Years | 6% |
-| 11-25 Years | 5% |
-| Life Sentence | 5% |
-
-Inverse probability burns: unlikely outcomes trigger larger burns.
-
-### 8.3 Future Events
+### 8.2 Future Events
 
 The $LIST framework can extend to other verifiable events:
 - Court verdicts

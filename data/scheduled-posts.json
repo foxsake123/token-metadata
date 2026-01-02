@@ -1,117 +1,110 @@
 {
   "posts": [
     {
-      "id": "sun-28-am",
-      "scheduledFor": "2025-12-28T09:00:00",
-      "content": "📊 POLYMARKET UPDATE\n\nHottest $LIST burn candidates:\n\n1. Henry Kissinger: 15%\n2. David Koch: 14%\n3. Tony Blair: 13%\n4. Jamie Dimon: 13%\n5. Ellen DeGeneres: 13%\n\nWho's next? 👀\n\n#LIST #Solana",
-      "type": "odds",
+      "id": "tue-31-am",
+      "scheduledFor": "2025-12-31T09:00:00",
+      "content": "🚨 BREAKING: DOJ working \"around the clock\" on Epstein files\n\nMillions of pages still being reviewed.\n\nMore names coming. More burns coming.\n\nThe list is real. $LIST\n\nhttps://nypost.com/2025/12/31/us-news/doj-working-around-the-clock-on-epstein-files-release-with-millions-of-pages-left-to-review/",
+      "type": "news",
       "posted": false
     },
     {
-      "id": "sun-28-pm",
-      "scheduledFor": "2025-12-28T14:00:00",
-      "content": "$LIST BURN TRACKER 🔥\n\n✅ Burned: 25%\n⏳ Pending: 39%\n📊 Max burn: 64%\n\n8 names confirmed. More coming.\n\nAre you positioned? 👀\n\n#LIST #Solana",
+      "id": "tue-31-pm",
+      "scheduledFor": "2025-12-31T14:00:00",
+      "content": "🔥 2025 $LIST RECAP\n\n✅ 8 names confirmed on the list\n✅ 25% of supply permanently burned\n✅ 2,462,304 LIST destroyed forever\n✅ Community built from zero\n\nAnd we're just getting started.\n\nHappy New Year! 🎆\n\n#LIST #Solana",
+      "type": "milestone",
+      "posted": false
+    },
+    {
+      "id": "tue-31-eve",
+      "scheduledFor": "2025-12-31T20:00:00",
+      "content": "🎆 Happy New Year $LIST fam!\n\nDOJ still releasing Epstein files.\nMillions of pages left.\nMore names = more burns.\n\n2026 is going to be big.\n\nThe more names drop. The more $LIST pops. 🔥",
       "type": "engagement",
       "posted": false
     },
     {
-      "id": "sun-28-eve",
-      "scheduledFor": "2025-12-28T19:00:00",
-      "content": "⏰ 3 DAYS LEFT\n\nPolymarket Epstein market closes Dec 31\n\nAny confirmations before then = BURNS 🔥\n\nTime is running out to accumulate $LIST 👀\n\n#Solana #Polymarket",
-      "type": "countdown",
+      "id": "wed-01-pm",
+      "scheduledFor": "2026-01-01T14:00:00",
+      "content": "GM and Happy New Year! 🎆\n\n$LIST 2026 roadmap:\n\n✅ CoinGecko listing (pending)\n✅ Jupiter verification (pending)\n⏳ CoinMarketCap submission\n⏳ More DOJ file releases\n⏳ Community milestones\n\nLFG 🔥\n\n#LIST #Crypto2026",
+      "type": "engagement",
       "posted": false
     },
     {
-      "id": "mon-29-am",
-      "scheduledFor": "2025-12-29T09:00:00",
-      "content": "GM $LIST fam ☀️\n\n2 days until Polymarket closes.\n\nCurrent top candidates:\n• Henry Kissinger (15%)\n• David Koch (14%)\n• Tony Blair (13%)\n\nEvery confirmation = permanent burn 🔥\n\n#LIST #Solana",
-      "type": "odds",
+      "id": "thu-02-am",
+      "scheduledFor": "2026-01-02T09:00:00",
+      "content": "Why $LIST?\n\n✅ Real burns tied to real events\n✅ DOJ verified documents\n✅ On-chain transparency\n✅ Deflationary by design\n\n25% already burned. DOJ has millions more pages to release.\n\nThe truth token. 🔥\n\n#LIST #Solana",
+      "type": "engagement",
       "posted": false
     },
     {
-      "id": "mon-29-pm",
-      "scheduledFor": "2025-12-29T14:00:00",
+      "id": "thu-02-pm",
+      "scheduledFor": "2026-01-02T14:00:00",
+      "content": "DOJ is still reviewing MILLIONS of pages of Epstein documents.\n\nEvery new name confirmed = permanent burn.\n\nTick tock. 🔥\n\n$LIST #Solana",
+      "type": "news",
+      "posted": false
+    },
+    {
+      "id": "fri-03-am",
+      "scheduledFor": "2026-01-03T09:00:00",
+      "content": "📊 $LIST STATS\n\n• Initial supply: 9,849,232\n• Burned: 2,462,304 (25%)\n• Current: 7,386,928\n• Max burn: 64%\n\nThe most transparent burn mechanism in crypto.\n\nEvery burn is on-chain. Every burn is permanent.\n\n#LIST #Solana",
+      "type": "stats",
+      "posted": false
+    },
+    {
+      "id": "fri-03-pm",
+      "scheduledFor": "2026-01-03T14:00:00",
+      "content": "8 names confirmed ✅\n\n1. Prince Andrew - 5%\n2. Bill Gates - 4.5%\n3. Alan Dershowitz - 3.5%\n4. Bill Clinton - 3.5%\n5. Stephen Hawking - 3%\n6. Donald Trump - 2%\n7. Michael Jackson - 2%\n8. Barack Obama - 1.5%\n\nWho's next? 👀\n\n$LIST",
+      "type": "burns",
+      "posted": false
+    },
+    {
+      "id": "sat-04-am",
+      "scheduledFor": "2026-01-04T10:00:00",
+      "content": "Weekend vibes 🔥\n\nDOJ still working through millions of Epstein docs.\n\nWe burn when names drop.\nSimple as that.\n\n$LIST #Solana",
+      "type": "engagement",
+      "posted": false
+    },
+    {
+      "id": "sat-04-pm",
+      "scheduledFor": "2026-01-04T15:00:00",
+      "content": "How $LIST works:\n\n1️⃣ DOJ releases Epstein documents\n2️⃣ Names get confirmed\n3️⃣ We execute burns on-chain\n4️⃣ Supply decreases permanently\n\nNo speculation. Just verification.\n\nThe list is real. The burns are real. 🔥\n\n$LIST",
+      "type": "education",
+      "posted": false
+    },
+    {
+      "id": "sun-05-am",
+      "scheduledFor": "2026-01-05T10:00:00",
+      "content": "🎨 MEME CONTEST ENDS TODAY!\n\nWinners announced this evening.\n\n🥇 25,000 LIST\n🥈 15,000 LIST\n🥉 10,000 LIST\n\nLast chance to enter! Post with #LISTmeme\n\n$LIST",
+      "type": "contest",
+      "posted": false
+    },
+    {
+      "id": "sun-05-pm",
+      "scheduledFor": "2026-01-05T18:00:00",
+      "content": "🏆 MEME CONTEST WINNERS!\n\n[Announce winners here]\n\nThanks to everyone who entered. Rewards sent in weekly payout.\n\nStay tuned for more contests! 🔥\n\n$LIST",
+      "type": "contest",
+      "posted": false
+    },
+    {
+      "id": "mon-06-am",
+      "scheduledFor": "2026-01-06T09:00:00",
+      "content": "New week. Same mission.\n\nBurn when names drop. 🔥\n\nDOJ has millions of pages left to review.\n\nAre you positioned?\n\n$LIST #Solana",
+      "type": "engagement",
+      "posted": false
+    },
+    {
+      "id": "mon-06-pm",
+      "scheduledFor": "2026-01-06T14:00:00",
       "content": "Quick poll:\n\nHow much $LIST are you holding?\n\n🔥 < 10K\n🔥🔥 10K - 100K\n🔥🔥🔥 100K - 1M\n🔥🔥🔥🔥 1M+\n\nComment below 👇\n\n#LIST #Solana",
       "type": "engagement",
       "posted": false
     },
     {
-      "id": "mon-29-eve",
-      "scheduledFor": "2025-12-29T19:00:00",
-      "content": "Imagine not holding $LIST when the next name drops... 📜\n\nEvery confirmation = permanent burn\nEvery burn = less supply\n\n🔥🔥🔥\n\n#LIST #FOMO",
-      "type": "fomo",
-      "posted": false
-    },
-    {
-      "id": "tue-30-am",
-      "scheduledFor": "2025-12-30T09:00:00",
-      "content": "📊 24 HOURS LEFT\n\nPolymarket Epstein market closes tomorrow.\n\nTop 5 candidates:\n1. Henry Kissinger: 15%\n2. David Koch: 14%\n3. Tony Blair: 13%\n4. Jamie Dimon: 13%\n5. Sean Combs: 13%\n\n#LIST 🔥",
-      "type": "odds",
-      "posted": false
-    },
-    {
-      "id": "tue-30-pm",
-      "scheduledFor": "2025-12-30T14:00:00",
-      "content": "Supply update:\n\n🔴 Started: 9,849,232 LIST\n🟢 Now: 7,386,928 LIST\n📉 Burned: 2,462,304 LIST (25%)\n\nAnd we're just getting started.\n\n$LIST #Solana",
-      "type": "supply",
-      "posted": false
-    },
-    {
-      "id": "tue-30-eve",
-      "scheduledFor": "2025-12-30T19:00:00",
-      "content": "Who do you think is next on the list? 👇\n\nDrop your predictions below.\n\nLast chance before Polymarket closes tomorrow!\n\n$LIST #Solana #Epstein",
-      "type": "engagement",
-      "posted": false
-    },
-    {
-      "id": "wed-31-am",
-      "scheduledFor": "2025-12-31T09:00:00",
-      "content": "🚨 FINAL DAY 🚨\n\nPolymarket Epstein market closes TONIGHT.\n\nAny last-minute confirmations = BURNS 🔥\n\nWho will make the list before midnight?\n\n$LIST #NYE2025",
-      "type": "countdown",
-      "posted": false
-    },
-    {
-      "id": "wed-31-pm",
-      "scheduledFor": "2025-12-31T14:00:00",
-      "content": "2024 Recap for $LIST:\n\n✅ 8 names confirmed\n✅ 25% supply burned\n✅ Community growing\n✅ More burns pending\n\n2025 = Diddy trial verdict 👀\n\nHappy New Year! 🎆\n\n#LIST #NYE",
-      "type": "milestone",
-      "posted": false
-    },
-    {
-      "id": "wed-31-eve",
-      "scheduledFor": "2025-12-31T20:00:00",
-      "content": "🎆 Happy New Year $LIST fam!\n\n25% burned in our first month.\n\n2025 brings:\n• More Epstein confirmations\n• Diddy trial verdict\n• New burn events\n\nThe more names drop. The more $LIST pops. 🔥\n\n#HappyNewYear",
-      "type": "engagement",
-      "posted": false
-    },
-    {
-      "id": "thu-01-am",
-      "scheduledFor": "2026-01-01T12:00:00",
-      "content": "GM and Happy New Year! 🎆\n\n$LIST 2025 roadmap:\n\n✅ CoinGecko listing (pending)\n✅ Jupiter verification (pending)\n⏳ CoinMarketCap\n⏳ Diddy trial burns\n⏳ Community milestones\n\nLFG 🔥\n\n#LIST #Crypto2025",
-      "type": "engagement",
-      "posted": false
-    },
-    {
-      "id": "fri-02-am",
-      "scheduledFor": "2026-01-02T09:00:00",
-      "content": "Why $LIST?\n\n✅ Real burns tied to real events\n✅ Polymarket verified\n✅ On-chain transparency\n✅ Deflationary by design\n\n25% already gone. More coming.\n\nThe truth token. 🔥\n\n#LIST #Solana",
-      "type": "engagement",
-      "posted": false
-    },
-    {
-      "id": "fri-02-pm",
-      "scheduledFor": "2026-01-02T14:00:00",
-      "content": "📊 DIDDY TRIAL PREVIEW\n\nUpcoming burn triggers:\n\n• No Prison: 8% burn\n• Life Sentence: 5% burn\n• 20+ Years: 3% burn\n\nPlus bonus burns for convictions.\n\nTrial coming Q1 2025 👀\n\n$LIST",
-      "type": "odds",
-      "posted": false
-    },
-    {
-      "id": "sat-03-am",
-      "scheduledFor": "2026-01-03T09:00:00",
-      "content": "Weekend vibes 🔥\n\n$LIST stats:\n• 25% burned\n• 8 names confirmed\n• 39% more pending\n• 64% max burn possible\n\nThe most transparent burn mechanism in crypto.\n\n#LIST #Solana",
-      "type": "engagement",
+      "id": "tue-07-am",
+      "scheduledFor": "2026-01-07T09:00:00",
+      "content": "The Epstein files aren't done.\n\nDOJ working around the clock.\nMillions of pages left.\nMore names will surface.\n\nWhen they do, we burn. 🔥\n\n$LIST",
+      "type": "news",
       "posted": false
     }
   ],
-  "lastUpdated": "2025-12-28T00:00:00Z"
+  "lastUpdated": "2025-12-30T00:00:00Z"
 }

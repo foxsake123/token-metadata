@@ -29,7 +29,9 @@
       "Bash(cmd //c \"schtasks /create /tn LIST-AutoPost /tr C:\\\\Users\\\\shorg\\\\list-token\\\\shorg\\\\scripts\\\\run-auto-post.bat /sc HOURLY /st 00:00 /f\")",
       "Bash(cmd //c \"schtasks /query /tn LIST-AutoPost /fo LIST\")",
       "Bash(npm install:*)",
-      "Bash(cmd //c \"schtasks /create /tn LIST-WeeklyRewards /tr C:\\\\Users\\\\shorg\\\\list-token\\\\shorg\\\\scripts\\\\run-rewards.bat /sc WEEKLY /d SUN /st 18:00 /f\")"
+      "Bash(cmd //c \"schtasks /create /tn LIST-WeeklyRewards /tr C:\\\\Users\\\\shorg\\\\list-token\\\\shorg\\\\scripts\\\\run-rewards.bat /sc WEEKLY /d SUN /st 18:00 /f\")",
+      "Bash(tasklist:*)",
+      "Bash(findstr:*)"
     ]
   }
 }

@@ -23,26 +23,29 @@
       {
         "place": 1,
         "twitter": "@Crypt_amos",
-        "wallet": "pending",
+        "wallet": "received",
         "amount": 25000,
-        "status": "awaiting_wallet",
-        "announcedAt": "2026-01-05"
+        "status": "paid",
+        "announcedAt": "2026-01-05",
+        "paidAt": "2026-01-06"
       },
       {
         "place": 2,
         "twitter": "@JenniferKi50832",
-        "wallet": "pending",
+        "wallet": "received",
         "amount": 15000,
-        "status": "awaiting_wallet",
-        "announcedAt": "2026-01-05"
+        "status": "paid",
+        "announcedAt": "2026-01-05",
+        "paidAt": "2026-01-06"
       },
       {
         "place": 3,
         "twitter": "@Fawaz_of_Web3",
-        "wallet": "pending",
+        "wallet": "received",
         "amount": 10000,
-        "status": "awaiting_wallet",
-        "announcedAt": "2026-01-05"
+        "status": "paid",
+        "announcedAt": "2026-01-05",
+        "paidAt": "2026-01-06"
       }
     ]
   },

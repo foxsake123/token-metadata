@@ -502,7 +502,7 @@ async function main() {
     // Send Discord notification
     await discord.sendBurnDetected(target.name, target.burnAllocationPercent);
 
-    if (twitter.isConfigured() && !DRY_RUN) {
+    if (twitter?.isConfigured() && !DRY_RUN) {
       const tweet = `🔥 BURN INCOMING 🔥
 
 ${target.name} has been CONFIRMED on the Epstein list!
@@ -521,7 +521,7 @@ ${target.burnAllocationPercent}% burn executing...
     // Send Discord notification
     await discord.sendBurnExecuted(target.name, target.burnAllocationPercent, signature);
 
-    if (twitter.isConfigured() && !DRY_RUN) {
+    if (twitter?.isConfigured() && !DRY_RUN) {
       const tweet = `🔥 BURN EXECUTED 🔥
 
 ${target.name}: ${target.burnAllocationPercent}% BURNED
@@ -554,14 +554,14 @@ Supply reduced. Value increased.
   // Keep alive
   process.on('SIGTERM', () => {
     console.log('Received SIGTERM, shutting down...');
-    scheduler.stop();
+    scheduler?.stop();
     server.close();
     process.exit(0);
   });
 
   process.on('SIGINT', () => {
     console.log('Received SIGINT, shutting down...');
-    scheduler.stop();
+    scheduler?.stop();
     server.close();
     process.exit(0);
   });

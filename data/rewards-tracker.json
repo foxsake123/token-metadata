@@ -14,11 +14,36 @@
   "raidContributions": [],
   "referrals": [],
   "memeContest": {
-    "active": true,
+    "active": false,
     "endDate": "2026-01-05",
     "prizePool": 50000,
     "entries": [],
-    "winners": []
+    "winners": [
+      {
+        "place": 1,
+        "twitter": "@Crypt_amos",
+        "wallet": "pending",
+        "amount": 25000,
+        "status": "awaiting_wallet",
+        "announcedAt": "2026-01-05"
+      },
+      {
+        "place": 2,
+        "twitter": "@JenniferKi50832",
+        "wallet": "pending",
+        "amount": 15000,
+        "status": "awaiting_wallet",
+        "announcedAt": "2026-01-05"
+      },
+      {
+        "place": 3,
+        "twitter": "@Fawaz_of_Web3",
+        "wallet": "pending",
+        "amount": 10000,
+        "status": "awaiting_wallet",
+        "announcedAt": "2026-01-05"
+      }
+    ]
   },
   "payoutHistory": [],
   "settings": {

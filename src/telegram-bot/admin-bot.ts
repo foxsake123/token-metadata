@@ -62,6 +62,11 @@ if (!BOT_TOKEN) {
 }
 
 const bot = new TelegramBot(BOT_TOKEN, { polling: true });
+
+// Debug: log all incoming messages
+bot.on('message', (msg) => {
+  console.log(`📩 Message from ${msg.from?.username || msg.from?.id}: ${msg.text}`);
+});
 const REWARDS_FILE = path.join(__dirname, '..', '..', 'data', 'rewards-tracker.json');
 
 console.log('🤖 LIST Admin Bot started!');
@@ -95,6 +100,7 @@ function saveRewards(data: any): void {
 // ============================================================================
 
 bot.onText(/\/start/, (msg: Message) => {
+  console.log('🔥 /start command triggered!');
   const chatId = msg.chat.id;
   let welcome = `
 🔥 Welcome to the LIST Burn Alert Bot!
@@ -181,6 +187,7 @@ Burns:
 });
 
 bot.onText(/\/price/, async (msg: Message) => {
+  console.log('🔥 /price command triggered!');
   const chatId = msg.chat.id;
   try {
     const data = await fetchJson(
@@ -619,3 +626,91 @@ bot.onText(/\/status$/, (msg: Message) => {
 });
 
 console.log('Bot running. Commands ready.');
+
+// =============================================================================
+// BUY ALERTS
+// =============================================================================
+
+const CHANNEL_ID = process.env.TELEGRAM_CHANNEL_ID;
+const LIST_PAIR = 'https://api.dexscreener.com/latest/dex/pairs/solana/ADyAi2M44oFse9ZebsVGWr3dSkV4HC2Dc4ADQ5z2pMGW';
+
+let lastTradeTime = Date.now();
+let alertsEnabled = true;
+
+interface DexTrade {
+  txnHash: string;
+  priceUsd: string;
+  amount: number;
+  type: 'buy' | 'sell';
+  timestamp: number;
+}
+
+async function checkBuys(): Promise<void> {
+  if (!CHANNEL_ID || !alertsEnabled) return;
+
+  try {
+    const data = await fetchJson(LIST_PAIR);
+    const pair = data?.pair;
+
+    if (!pair) return;
+
+    const priceUsd = parseFloat(pair.priceUsd || '0');
+    const txns = pair.txns?.h1 || { buys: 0, sells: 0 };
+    const volume = pair.volume?.h1 || 0;
+
+    // Check for significant buys via volume spike
+    if (volume > 100 && txns.buys > 0) {
+      const avgBuySize = volume / (txns.buys + txns.sells);
+
+      // Alert on buys > $50
+      if (avgBuySize > 50) {
+        const emoji = avgBuySize > 500 ? '🐋' : avgBuySize > 200 ? '🔥' : '💚';
+
+        const message = `${emoji} NEW BUY DETECTED
+
+💰 ~$${avgBuySize.toFixed(0)} buy
+📊 Price: $${priceUsd.toFixed(8)}
+📈 1h Volume: $${volume.toFixed(0)}
+🛒 Buys/Sells: ${txns.buys}/${txns.sells}
+
+${avgBuySize > 200 ? 'Big buyer in the house! 🚀' : 'Stack those bags! 💎'}`;
+
+        bot.sendMessage(CHANNEL_ID, message);
+
+        // Don't spam - wait at least 5 mins between alerts
+        alertsEnabled = false;
+        setTimeout(() => { alertsEnabled = true; }, 5 * 60 * 1000);
+      }
+    }
+  } catch (err) {
+    console.error('Buy alert error:', err);
+  }
+}
+
+// Check every 60 seconds
+if (CHANNEL_ID) {
+  console.log(`📢 Buy alerts enabled for channel ${CHANNEL_ID}`);
+  setInterval(checkBuys, 60 * 1000);
+  checkBuys(); // Initial check
+} else {
+  console.log('⚠️ TELEGRAM_CHANNEL_ID not set - buy alerts disabled');
+}
+
+// Admin command to toggle alerts
+bot.onText(/\/alerts (.+)/, (msg: Message, match: RegExpExecArray | null) => {
+  if (!isAdmin(msg)) {
+    bot.sendMessage(msg.chat.id, '❌ Admin only');
+    return;
+  }
+
+  const action = match?.[1]?.toLowerCase();
+  if (action === 'on') {
+    alertsEnabled = true;
+    bot.sendMessage(msg.chat.id, '✅ Buy alerts enabled');
+  } else if (action === 'off') {
+    alertsEnabled = false;
+    bot.sendMessage(msg.chat.id, '❌ Buy alerts disabled');
+  } else {
+    bot.sendMessage(msg.chat.id, `Buy alerts: ${alertsEnabled ? 'ON' : 'OFF'}\n\nUsage: /alerts on|off`);
+  }
+});

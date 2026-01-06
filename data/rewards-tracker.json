@@ -4,11 +4,12 @@
       "name": "zonly_SON",
       "wallet": "3PvKEXadU2rMBgVvg9jeqMX6mX5rqYCMbVavMKV6Pf29",
       "twitter": "@zonly_SON",
-      "tier": "pending",
+      "tier": "silver",
       "joinedAt": "2025-12-30",
-      "monthlyReward": 0,
+      "monthlyReward": 2500,
       "totalPaid": 0,
-      "active": true
+      "active": true,
+      "role": "Community Manager"
     }
   ],
   "raidContributions": [],

@@ -10,6 +10,17 @@
       "totalPaid": 0,
       "active": true,
       "role": "Community Manager"
+    },
+    {
+      "name": "NOVA_EDGE",
+      "wallet": "2XR5CzkWRMXPKDRYCK5MJgyDP6gMxLdqVDYc6bZvsZG5",
+      "twitter": "@AbdulGoniu30836",
+      "tier": "bronze",
+      "joinedAt": "2026-01-06",
+      "monthlyReward": 1000,
+      "totalPaid": 0,
+      "active": true,
+      "role": "Raid Captain"
     }
   ],
   "raidContributions": [],

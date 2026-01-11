@@ -36,7 +36,7 @@ Happy to chat more. Here's our site: list-coin.com
 
 ## 2. Meme Contest
 
-**Status:** ACTIVE - Posted to Twitter Dec 29, ends Jan 5
+**Status:** COMPLETED - Winners paid Jan 6
 
 ### Rules
 - **Duration:** 1 week
@@ -156,8 +156,11 @@ Mint an NFT for each executed burn as a collectible/proof
 - Onboard new members
 - Report FUD/scams
 
-### Current Candidates
-- **EMMA** - Reached out Dec 29, awaiting vetting (Twitter, experience)
+### Current Team
+| Name | Role | Tier | Status |
+|------|------|------|--------|
+| S.O.N (@zonly_SON) | Community Manager | Silver | Active |
+| NOVA_EDGE (@AbdulGoniu30836) | Raid Captain | Bronze | Active |
 
 ### Application
 DM @ListDrop on Twitter or Telegram with:
@@ -169,19 +172,38 @@ DM @ListDrop on Twitter or Telegram with:
 
 ## 6. Raid Squad
 
-**Status:** ACTIVE - Posted to Telegram Dec 29
+**Status:** ACTIVE
+**Raid Captain:** NOVA_EDGE (@AbdulGoniu30836) - Joined Jan 2026
 
 ### Structure
-- **Raid Captain:** Coordinates targets
-- **Raiders:** Engage with content
+- **Raid Captain:** NOVA_EDGE - Coordinates targets, leads raids
+- **Raiders:** Community members who engage with content
 
-### Rewards
-- 500 LIST per quality reply
-- 1,000 LIST for threads
-- Bonuses for viral engagement
+### Raid Captain Compensation
+| Item | Amount |
+|------|--------|
+| Base | 1,000 LIST/month (250 LIST/week) |
+| Bonus Tier 1 | +500 LIST per raid with 25+ comments/reposts OR 100+ likes |
+| Bonus Tier 2 | +1,000 LIST per raid with 50+ comments/reposts OR 200+ likes |
+| Weekly Cap | 5,000 LIST |
+
+### Raid Template
+```
+RAID TIME
+
+Target: [tweet link]
+
+Instructions:
+1. Like
+2. Comment mentioning $LIST
+3. Repost
+4. Screenshot & post here
+
+Go!
+```
 
 ### Targets
-- Epstein/Diddy news tweets
+- Epstein/DOJ news tweets
 - Crypto influencer posts about memes
 - Polymarket mentions
 - Solana ecosystem posts
@@ -193,7 +215,7 @@ DM @ListDrop on Twitter or Telegram with:
 4. Never harass or argue
 
 ### Telegram Group
-Create private "LIST Raiders" group for coordination
+Main group: @listdropofficial
 
 ---
 

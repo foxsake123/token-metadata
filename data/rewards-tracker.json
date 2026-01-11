@@ -7,9 +7,10 @@
       "tier": "silver",
       "joinedAt": "2025-12-30",
       "monthlyReward": 2500,
-      "totalPaid": 0,
+      "totalPaid": 625,
       "active": true,
-      "role": "Community Manager"
+      "role": "Community Manager",
+      "lastPaidAt": "2026-01-11T23:00:05.698Z"
     },
     {
       "name": "NOVA_EDGE",
@@ -18,9 +19,10 @@
       "tier": "bronze",
       "joinedAt": "2026-01-06",
       "monthlyReward": 1000,
-      "totalPaid": 0,
+      "totalPaid": 250,
       "active": true,
-      "role": "Raid Captain"
+      "role": "Raid Captain",
+      "lastPaidAt": "2026-01-11T23:00:05.699Z"
     }
   ],
   "raidContributions": [],
@@ -60,7 +62,13 @@
       }
     ]
   },
-  "payoutHistory": [],
+  "payoutHistory": [
+    {
+      "date": "2026-01-11T23:00:05.699Z",
+      "totalPaid": 875,
+      "recipients": 2
+    }
+  ],
   "settings": {
     "weeklyCapTotal": 50000,
     "weeklyCapPerPerson": 5000,

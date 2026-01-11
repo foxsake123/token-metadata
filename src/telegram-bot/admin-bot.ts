@@ -36,20 +36,36 @@ import {
 
 dotenv.config();
 
-// Simple HTTPS fetch
+// Simple HTTPS fetch with caching
+const apiCache = new Map<string, { data: any; timestamp: number }>();
+const CACHE_TTL = 30000; // 30 seconds
+
 function fetchJson(url: string): Promise<any> {
+  // Check cache first
+  const cached = apiCache.get(url);
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+    return Promise.resolve(cached.data);
+  }
+
   return new Promise((resolve, reject) => {
     https.get(url, (res) => {
       let data = '';
       res.on('data', chunk => data += chunk);
       res.on('end', () => {
         try {
-          resolve(JSON.parse(data));
+          const parsed = JSON.parse(data);
+          // Store in cache
+          apiCache.set(url, { data: parsed, timestamp: Date.now() });
+          resolve(parsed);
         } catch (e) {
+          console.error('JSON parse error:', e);
           reject(e);
         }
       });
-    }).on('error', reject);
+    }).on('error', (err) => {
+      console.error('Fetch error:', err);
+      reject(err);
+    });
   });
 }
 
@@ -86,13 +102,50 @@ function isAdmin(msg: Message): boolean {
   return msg.from?.id.toString() === ADMIN_USER_ID;
 }
 
+// Input validation
+function isValidSolanaAddress(address: string): boolean {
+  // Solana addresses are base58 encoded, 32-44 characters
+  return /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(address);
+}
+
+function isValidTwitterHandle(handle: string): boolean {
+  const cleaned = handle.replace('@', '');
+  return /^[A-Za-z0-9_]{1,15}$/.test(cleaned);
+}
+
+function isValidAmount(amount: number, min = 1, max = 1000000): boolean {
+  return !isNaN(amount) && amount >= min && amount <= max;
+}
+
 function loadRewards(): any {
-  const data = fs.readFileSync(REWARDS_FILE, 'utf-8');
-  return JSON.parse(data);
+  try {
+    const data = fs.readFileSync(REWARDS_FILE, 'utf-8');
+    return JSON.parse(data);
+  } catch (error) {
+    console.error('Error loading rewards:', error);
+    throw error;
+  }
 }
 
 function saveRewards(data: any): void {
-  fs.writeFileSync(REWARDS_FILE, JSON.stringify(data, null, 2));
+  try {
+    const tempFile = `${REWARDS_FILE}.tmp`;
+    const backupFile = `${REWARDS_FILE}.backup`;
+
+    // Write to temp file first
+    fs.writeFileSync(tempFile, JSON.stringify(data, null, 2));
+
+    // Backup existing file
+    if (fs.existsSync(REWARDS_FILE)) {
+      fs.copyFileSync(REWARDS_FILE, backupFile);
+    }
+
+    // Atomic rename
+    fs.renameSync(tempFile, REWARDS_FILE);
+  } catch (error) {
+    console.error('Error saving rewards:', error);
+    throw error;
+  }
 }
 
 // ============================================================================
@@ -200,10 +253,12 @@ bot.onText(/\/price/, async (msg: Message) => {
       const message = `💰 $LIST: $${price}\n24h: ${change24h >= 0 ? '📈' : '📉'} ${change24h}%`;
       bot.sendMessage(chatId, message);
     } else {
+      console.error('Price fetch: No pairs found in response');
       bot.sendMessage(chatId, '❌ Could not fetch price');
     }
-  } catch {
-    bot.sendMessage(chatId, '❌ Error fetching price');
+  } catch (error) {
+    console.error('Price command error:', error);
+    bot.sendMessage(chatId, '❌ Error fetching price. Try again later.');
   }
 });
 
@@ -250,6 +305,16 @@ bot.onText(/\/register (.+)/, (msg: Message, match: RegExpExecArray | null) => {
 
   const [wallet, twitter] = args;
 
+  if (!isValidSolanaAddress(wallet)) {
+    bot.sendMessage(msg.chat.id, '❌ Invalid Solana wallet address');
+    return;
+  }
+
+  if (!isValidTwitterHandle(twitter)) {
+    bot.sendMessage(msg.chat.id, '❌ Invalid Twitter handle (1-15 alphanumeric chars)');
+    return;
+  }
+
   const data = loadRewards();
   data.ambassadors.push({
     name: twitter.replace('@', ''),
@@ -280,6 +345,17 @@ bot.onText(/\/addambassador (.+)/, (msg: Message, match: RegExpExecArray | null)
   }
 
   const [wallet, twitter, tier] = args;
+
+  if (!isValidSolanaAddress(wallet)) {
+    bot.sendMessage(msg.chat.id, '❌ Invalid Solana wallet address');
+    return;
+  }
+
+  if (!isValidTwitterHandle(twitter)) {
+    bot.sendMessage(msg.chat.id, '❌ Invalid Twitter handle (1-15 alphanumeric chars)');
+    return;
+  }
+
   const rewards: Record<string, number> = { bronze: 5000, silver: 15000, gold: 30000 };
 
   if (!rewards[tier]) {
@@ -367,6 +443,17 @@ bot.onText(/\/addraid (.+)/, (msg: Message, match: RegExpExecArray | null) => {
   }
 
   const [wallet, twitter, type, url] = args;
+
+  if (!isValidSolanaAddress(wallet)) {
+    bot.sendMessage(msg.chat.id, '❌ Invalid Solana wallet address');
+    return;
+  }
+
+  if (!isValidTwitterHandle(twitter)) {
+    bot.sendMessage(msg.chat.id, '❌ Invalid Twitter handle (1-15 alphanumeric chars)');
+    return;
+  }
+
   const rewards: Record<string, number> = { reply: 500, thread: 1000, viral: 2000 };
 
   if (!rewards[type]) {
@@ -403,10 +490,16 @@ bot.onText(/\/meme (.+)/, (msg: Message, match: RegExpExecArray | null) => {
   }
 
   const [wallet, amountStr] = args;
-  const amount = parseInt(amountStr);
 
-  if (isNaN(amount)) {
-    bot.sendMessage(msg.chat.id, '❌ Amount must be a number');
+  if (!isValidSolanaAddress(wallet)) {
+    bot.sendMessage(msg.chat.id, '❌ Invalid Solana wallet address');
+    return;
+  }
+
+  const amount = parseInt(amountStr, 10);
+
+  if (!isValidAmount(amount, 100, 100000)) {
+    bot.sendMessage(msg.chat.id, '❌ Amount must be between 100 and 100,000 LIST');
     return;
   }
 
@@ -524,10 +617,21 @@ bot.onText(/\/addref (.+)/, (msg: Message, match: RegExpExecArray | null) => {
   }
 
   const [newWallet, referrerWallet, amountStr] = args;
-  const amount = parseInt(amountStr);
 
-  if (isNaN(amount) || amount < 10000) {
-    bot.sendMessage(msg.chat.id, '❌ Purchase amount must be at least 10,000 LIST');
+  if (!isValidSolanaAddress(newWallet)) {
+    bot.sendMessage(msg.chat.id, '❌ Invalid new wallet address');
+    return;
+  }
+
+  if (!isValidSolanaAddress(referrerWallet)) {
+    bot.sendMessage(msg.chat.id, '❌ Invalid referrer wallet address');
+    return;
+  }
+
+  const amount = parseInt(amountStr, 10);
+
+  if (!isValidAmount(amount, 10000, 10000000)) {
+    bot.sendMessage(msg.chat.id, '❌ Purchase amount must be between 10,000 and 10,000,000 LIST');
     return;
   }
 

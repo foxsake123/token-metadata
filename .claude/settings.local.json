@@ -31,7 +31,13 @@
       "Bash(npm install:*)",
       "Bash(cmd //c \"schtasks /create /tn LIST-WeeklyRewards /tr C:\\\\Users\\\\shorg\\\\list-token\\\\shorg\\\\scripts\\\\run-rewards.bat /sc WEEKLY /d SUN /st 18:00 /f\")",
       "Bash(tasklist:*)",
-      "Bash(findstr:*)"
+      "Bash(findstr:*)",
+      "Bash(npm run build:*)",
+      "Bash(taskkill /F /PID 57340)",
+      "Bash(cmd /c \"taskkill /F /PID 57340\")",
+      "Bash(cmd //c \"taskkill //F //PID 57340\")",
+      "WebFetch(domain:www.coingecko.com)",
+      "Bash(git checkout:*)"
     ]
   }
 }

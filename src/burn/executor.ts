@@ -21,6 +21,8 @@ import {
   BurnTarget,
   LIST_TOKEN_MINT,
   DECIMALS,
+  MAX_BURN_PERCENT,
+  TOTAL_SUPPLY,
   calculateBurnAmount,
   getAllTargets,
 } from './config';
@@ -69,12 +71,38 @@ export class ListBurnExecutor {
   }
 
   /**
+   * Calculate total burned percentage so far
+   */
+  getTotalBurnedPercent(): number {
+    const targets = getAllTargets();
+    return targets
+      .filter((t: BurnTarget) => t.status === 'executed')
+      .reduce((sum: number, t: BurnTarget) => sum + t.burnAllocationPercent, 0);
+  }
+
+  /**
    * Execute a single burn for a confirmed target
    */
   async executeBurn(target: BurnTarget): Promise<BurnResult> {
     const burnAmount = calculateBurnAmount(target);
 
+    // Check if this burn would exceed the 75% cap
+    const currentBurnedPercent = this.getTotalBurnedPercent();
+    const newTotalPercent = currentBurnedPercent + target.burnAllocationPercent;
+
+    if (newTotalPercent > MAX_BURN_PERCENT) {
+      const errorMsg = `Burn rejected: Would exceed ${MAX_BURN_PERCENT}% cap (current: ${currentBurnedPercent}%, requested: ${target.burnAllocationPercent}%, total would be: ${newTotalPercent}%)`;
+      console.error(`❌ ${errorMsg}`);
+      return {
+        target,
+        success: false,
+        error: errorMsg,
+        burnedAmount: BigInt(0),
+      };
+    }
+
     console.log(`Executing burn for ${target.name}: ${burnAmount.toString()} tokens`);
+    console.log(`   Current burned: ${currentBurnedPercent}%, After: ${newTotalPercent}%, Cap: ${MAX_BURN_PERCENT}%`);
 
     try {
       // Get the token account to burn from

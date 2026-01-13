@@ -3,13 +3,14 @@
  *
  * "The more names drop. The more $LIST pops."
  *
- * Total Max Burn: 49% (Epstein) + 15% (Diddy) = 64%
- * Conservative - not all names will confirm
+ * Max Burn Cap: 75% of total supply (hard limit)
+ * Current allocation: ~64% across all events
  */
 
 export const LIST_TOKEN_MINT = '5oKiBTTUutgk95g4MEgxUHtWJ9n21QXPSAusL6ic8KgM';
 export const TOTAL_SUPPLY = 9_849_232; // Actual circulating supply
 export const DECIMALS = 9;
+export const MAX_BURN_PERCENT = 75; // Hard cap - never burn more than 75% of supply
 
 export type BurnStatus = 'pending' | 'confirmed' | 'resolved_no' | 'executed';
 

@@ -13,6 +13,7 @@ import { ContentCalendar, TweetGenerator } from './social';
 import { EPSTEIN_ACTIVE_BURNS } from '../burn/config';
 import { DiscordWebhook } from './discord';
 import { getHolderCount, getDailyVolume, checkHolderMilestones, checkVolumeMilestones } from './holders';
+import { updateOddsFile, loadOddsFile } from './odds-updater';
 
 // Environment variable validation
 interface EnvConfig {
@@ -550,6 +551,16 @@ Supply reduced. Value increased.
     });
   }, CONTENT_CHECK_INTERVAL);
   console.log(`📤 Scheduled tweet checker running every ${CONTENT_CHECK_INTERVAL / 1000 / 60} minutes`);
+
+  // Start Polymarket odds updater (every hour)
+  const ODDS_UPDATE_INTERVAL = 60 * 60 * 1000; // 1 hour
+  updateOddsFile().catch(err => console.error('❌ Initial odds fetch failed:', err));
+  setInterval(() => {
+    updateOddsFile().catch(err => {
+      console.error('❌ Odds update error:', err);
+    });
+  }, ODDS_UPDATE_INTERVAL);
+  console.log(`📊 Polymarket odds updater running every ${ODDS_UPDATE_INTERVAL / 1000 / 60} minutes`);
 
   // Keep alive
   process.on('SIGTERM', () => {

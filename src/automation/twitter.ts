@@ -179,6 +179,54 @@ export class TwitterClient {
     }
   }
 
+  async postReply(text: string, replyToId: string): Promise<TweetResponse> {
+    if (this.dryRun) {
+      console.log('🐦 [DRY RUN] Would reply:');
+      console.log('─'.repeat(50));
+      console.log(`Reply to: ${replyToId}`);
+      console.log(text);
+      console.log('─'.repeat(50));
+      return { success: true, tweetId: 'dry-run-reply-id' };
+    }
+
+    if (!this.isConfigured()) {
+      return {
+        success: false,
+        error: 'Twitter API not configured',
+      };
+    }
+
+    const url = 'https://api.twitter.com/2/tweets';
+    const body = JSON.stringify({
+      text,
+      reply: { in_reply_to_tweet_id: replyToId }
+    });
+
+    try {
+      const authHeader = generateAuthHeader('POST', url, this.config);
+
+      const response = await this.makeRequest(url, {
+        method: 'POST',
+        headers: {
+          Authorization: authHeader,
+          'Content-Type': 'application/json',
+        },
+        body,
+      });
+
+      if (response.data?.id) {
+        console.log(`✅ Reply posted: https://twitter.com/i/status/${response.data.id}`);
+        return { success: true, tweetId: response.data.id };
+      } else {
+        return { success: false, error: response.error || 'Unknown error' };
+      }
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+      console.error(`❌ Reply failed: ${errorMsg}`);
+      return { success: false, error: errorMsg };
+    }
+  }
+
   async postThread(tweets: string[]): Promise<TweetResponse[]> {
     const results: TweetResponse[] = [];
     let replyToId: string | undefined;

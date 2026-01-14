@@ -16,6 +16,7 @@ import { getHolderCount, getDailyVolume, checkHolderMilestones, checkVolumeMiles
 import { updateOddsFile, loadOddsFile } from './odds-updater';
 import { checkAndProcessPayouts, getPayoutPreview } from './payout-scheduler';
 import { startNewsRaidScheduler } from './news-raid';
+import { updateCampaignData, getCampaignStats } from './campaign-tracker';
 
 // Environment variable validation
 interface EnvConfig {
@@ -640,6 +641,20 @@ Your $LIST just got more scarce. 🚀`;
     startNewsRaidScheduler(120); // Check every 2 hours
     console.log('📰 News raid scheduler running (checks every 2 hours)');
   }
+
+  // Start campaign tracker (every 6 hours)
+  const CAMPAIGN_UPDATE_INTERVAL = 6 * 60 * 60 * 1000; // 6 hours
+  const heliusKey = process.env.HELIUS_API_KEY;
+  updateCampaignData(heliusKey).then(campaign => {
+    const stats = getCampaignStats(campaign);
+    console.log(`📊 Campaign tracker: ${stats.totalHolders} holders, ${stats.eligibleHolders} eligible`);
+  }).catch(err => console.error('❌ Initial campaign fetch failed:', err));
+  setInterval(() => {
+    updateCampaignData(heliusKey).catch(err => {
+      console.error('❌ Campaign update error:', err);
+    });
+  }, CAMPAIGN_UPDATE_INTERVAL);
+  console.log(`📊 Campaign tracker running (updates every 6 hours)`);
 
   // Keep alive
   process.on('SIGTERM', () => {

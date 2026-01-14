@@ -17,6 +17,8 @@
  * /raids - List unpaid raid contributions
  * /refs - List pending referrals
  * /status - Full rewards status
+ * /campaign - Holder campaign stats
+ * /airdroplist - Generate eligible airdrop list
  *
  * Run: npx ts-node src/telegram-bot/admin-bot.ts
  */
@@ -33,6 +35,11 @@ import {
   calculateBurnAmount,
   formatBurnAmount,
 } from '../burn/config';
+import {
+  updateCampaignData,
+  formatStatsForTG,
+  generateAirdropList,
+} from '../automation/campaign-tracker';
 
 dotenv.config();
 
@@ -727,6 +734,64 @@ bot.onText(/\/status$/, (msg: Message) => {
   message += `📅 Payout: Sunday 6PM`;
 
   bot.sendMessage(msg.chat.id, message);
+});
+
+// Campaign stats
+bot.onText(/\/campaign$/, async (msg: Message) => {
+  if (!isAdmin(msg)) {
+    bot.sendMessage(msg.chat.id, '❌ Admin only');
+    return;
+  }
+
+  bot.sendMessage(msg.chat.id, '📊 Fetching holder data...');
+
+  try {
+    const heliusKey = process.env.HELIUS_API_KEY;
+    const campaign = await updateCampaignData(heliusKey);
+    const statsMsg = formatStatsForTG(campaign);
+    bot.sendMessage(msg.chat.id, statsMsg);
+  } catch (error) {
+    console.error('Campaign fetch error:', error);
+    bot.sendMessage(msg.chat.id, '❌ Failed to fetch campaign data');
+  }
+});
+
+// Airdrop list
+bot.onText(/\/airdroplist$/, async (msg: Message) => {
+  if (!isAdmin(msg)) {
+    bot.sendMessage(msg.chat.id, '❌ Admin only');
+    return;
+  }
+
+  try {
+    const heliusKey = process.env.HELIUS_API_KEY;
+    const campaign = await updateCampaignData(heliusKey);
+    const list = generateAirdropList(campaign);
+
+    if (list.length === 0) {
+      bot.sendMessage(msg.chat.id, '📋 No eligible holders yet (15 day hold required)');
+      return;
+    }
+
+    let message = `🎁 AIRDROP LIST (${list.length} eligible)\n\n`;
+
+    for (const holder of list.slice(0, 20)) {
+      const shortWallet = `${holder.wallet.slice(0, 4)}...${holder.wallet.slice(-4)}`;
+      message += `${holder.tier}: ${shortWallet} (${holder.balance.toLocaleString()} LIST) → ${holder.reward.toLocaleString()} LIST\n`;
+    }
+
+    if (list.length > 20) {
+      message += `\n... and ${list.length - 20} more`;
+    }
+
+    const totalReward = list.reduce((s, h) => s + h.reward, 0);
+    message += `\n\n💰 Total: ${totalReward.toLocaleString()} LIST`;
+
+    bot.sendMessage(msg.chat.id, message);
+  } catch (error) {
+    console.error('Airdrop list error:', error);
+    bot.sendMessage(msg.chat.id, '❌ Failed to generate airdrop list');
+  }
 });
 
 console.log('Bot running. Commands ready.');

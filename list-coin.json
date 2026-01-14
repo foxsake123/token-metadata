@@ -1,7 +1,7 @@
 {
   "name": "List Drop",
   "symbol": "LIST",
-  "description": "Event-driven burn token on Solana. Burns supply when names are confirmed in Epstein documents. The more names drop, the more $LIST pops.",
+  "description": "Event-driven burn token on Solana. Burns supply when names are confirmed in Epstein documents. The more names drop, the more LIST pops.",
   "image": "https://raw.githubusercontent.com/foxsake123/token-metadata/fresh-main/list-token.png",
   "external_url": "https://list-coin.com",
   "attributes": [

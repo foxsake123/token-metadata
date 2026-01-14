@@ -15,6 +15,7 @@ import { DiscordWebhook } from './discord';
 import { getHolderCount, getDailyVolume, checkHolderMilestones, checkVolumeMilestones } from './holders';
 import { updateOddsFile, loadOddsFile } from './odds-updater';
 import { checkAndProcessPayouts, getPayoutPreview } from './payout-scheduler';
+import { startNewsRaidScheduler } from './news-raid';
 
 // Environment variable validation
 interface EnvConfig {
@@ -504,6 +505,7 @@ async function main() {
     // Send Discord notification
     await discord.sendBurnDetected(target.name, target.burnAllocationPercent);
 
+    // Tweet announcement
     if (twitter?.isConfigured() && !DRY_RUN) {
       const tweet = `🔥 BURN INCOMING 🔥
 
@@ -511,9 +513,37 @@ ${target.name} has been CONFIRMED on the Epstein list!
 
 ${target.burnAllocationPercent}% burn executing...
 
-#LIST #Solana`;
+The list is real. $LIST
+
+#Epstein #DOJ #Solana`;
 
       await twitter.postTweet(tweet);
+    }
+
+    // Telegram announcement
+    if (process.env.TELEGRAM_CHANNEL_ID) {
+      try {
+        const tgMessage = `🔥 BURN INCOMING 🔥
+
+${target.name} CONFIRMED on the Epstein list!
+
+${target.burnAllocationPercent}% of supply burning...
+
+The list is real. 🔥`;
+
+        const tgUrl = `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`;
+        await fetch(tgUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chat_id: process.env.TELEGRAM_CHANNEL_ID,
+            text: tgMessage,
+          }),
+        });
+        console.log('📢 TG burn announcement sent');
+      } catch (err) {
+        console.error('TG announcement failed:', err);
+      }
     }
   };
 
@@ -523,6 +553,7 @@ ${target.burnAllocationPercent}% burn executing...
     // Send Discord notification
     await discord.sendBurnExecuted(target.name, target.burnAllocationPercent, signature);
 
+    // Tweet announcement
     if (twitter?.isConfigured() && !DRY_RUN) {
       const tweet = `🔥 BURN EXECUTED 🔥
 
@@ -530,11 +561,37 @@ ${target.name}: ${target.burnAllocationPercent}% BURNED
 
 TX: solscan.io/tx/${signature}
 
-Supply reduced. Value increased.
+Supply reduced. Holders win.
 
-#LIST #Solana #TokenBurn`;
+$LIST #Epstein #DOJ #TokenBurn`;
 
       await twitter.postTweet(tweet);
+    }
+
+    // Telegram announcement
+    if (process.env.TELEGRAM_CHANNEL_ID) {
+      try {
+        const tgMessage = `🔥🔥🔥 BURN EXECUTED 🔥🔥🔥
+
+${target.name}: ${target.burnAllocationPercent}% BURNED FOREVER
+
+TX: solscan.io/tx/${signature}
+
+Your $LIST just got more scarce. 🚀`;
+
+        const tgUrl = `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`;
+        await fetch(tgUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chat_id: process.env.TELEGRAM_CHANNEL_ID,
+            text: tgMessage,
+          }),
+        });
+        console.log('📢 TG burn executed announcement sent');
+      } catch (err) {
+        console.error('TG announcement failed:', err);
+      }
     }
   };
 
@@ -576,6 +633,13 @@ Supply reduced. Value increased.
     });
   }, PAYOUT_CHECK_INTERVAL);
   console.log(`💰 Payout scheduler running (${AUTO_PAYOUTS ? 'LIVE' : 'DRY RUN'} mode, checks hourly, pays Sundays 6PM)`);
+
+  // Start news raid scheduler (every 2 hours)
+  const NEWS_RAID_ENABLED = process.env.NEWS_RAID_ENABLED !== 'false';
+  if (NEWS_RAID_ENABLED) {
+    startNewsRaidScheduler(120); // Check every 2 hours
+    console.log('📰 News raid scheduler running (checks every 2 hours)');
+  }
 
   // Keep alive
   process.on('SIGTERM', () => {

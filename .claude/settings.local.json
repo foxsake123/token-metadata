@@ -37,7 +37,9 @@
       "Bash(cmd /c \"taskkill /F /PID 57340\")",
       "Bash(cmd //c \"taskkill //F //PID 57340\")",
       "WebFetch(domain:www.coingecko.com)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "WebFetch(domain:list-coin.com)",
+      "WebFetch(domain:foxsake123.github.io)"
     ]
   }
 }

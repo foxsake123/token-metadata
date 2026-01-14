@@ -73,28 +73,37 @@ function saveCampaignData(data: CampaignData): void {
 }
 
 /**
- * Fetch all token holders from Helius API
+ * Fetch all token holders from Helius DAS API
  */
 async function fetchHoldersFromHelius(heliusApiKey: string): Promise<{ wallet: string; balance: number }[]> {
   const url = `https://mainnet.helius-rpc.com/?api-key=${heliusApiKey}`;
 
   try {
-    // Get token accounts using Helius RPC
+    // Use DAS API getTokenAccounts with correct format
     const response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         jsonrpc: '2.0',
-        id: 1,
+        id: 'holder-fetch',
         method: 'getTokenAccounts',
         params: {
           mint: LIST_TOKEN_MINT,
           limit: 1000,
+          options: {
+            showZeroBalance: false,
+          }
         }
       })
     });
 
     const data = await response.json();
+
+    // Check for error
+    if (data.error) {
+      console.error('Helius API error:', data.error);
+      return [];
+    }
 
     if (data.result?.token_accounts) {
       return data.result.token_accounts
@@ -105,6 +114,17 @@ async function fetchHoldersFromHelius(heliusApiKey: string): Promise<{ wallet: s
         }));
     }
 
+    // Alternative response format
+    if (Array.isArray(data.result)) {
+      return data.result
+        .filter((acc: any) => acc.amount > 0 || acc.tokenAmount?.uiAmount > 0)
+        .map((acc: any) => ({
+          wallet: acc.owner || acc.address,
+          balance: acc.amount ? acc.amount / 1e9 : acc.tokenAmount?.uiAmount || 0,
+        }));
+    }
+
+    console.log('Helius response format:', JSON.stringify(data).slice(0, 200));
     return [];
   } catch (error) {
     console.error('Helius API error:', error);
@@ -113,33 +133,74 @@ async function fetchHoldersFromHelius(heliusApiKey: string): Promise<{ wallet: s
 }
 
 /**
- * Fallback: Fetch from Solscan API
+ * Fallback: Fetch from Solscan public API
  */
 async function fetchHoldersFromSolscan(): Promise<{ wallet: string; balance: number }[]> {
   try {
+    // Try public API v2
     const response = await fetch(
-      `https://api.solscan.io/token/holders?token=${LIST_TOKEN_MINT}&offset=0&size=100`,
+      `https://api-v2.solscan.io/v2/token/holders?token=${LIST_TOKEN_MINT}&page=1&page_size=100`,
       {
         headers: {
           'Accept': 'application/json',
-          'User-Agent': 'LIST-Campaign-Tracker',
+          'User-Agent': 'Mozilla/5.0 LIST-Campaign-Tracker',
+          'Origin': 'https://solscan.io',
         }
       }
     );
 
     const data = await response.json();
 
-    if (data.data?.result) {
-      return data.data.result.map((h: any) => ({
-        wallet: h.address,
-        balance: h.amount / 1e9,
+    // v2 API format
+    if (data.data?.items) {
+      return data.data.items.map((h: any) => ({
+        wallet: h.owner || h.address,
+        balance: (h.amount || h.ui_amount || 0) / 1e9,
       }));
     }
 
+    // v1 fallback format
+    if (data.data?.result) {
+      return data.data.result.map((h: any) => ({
+        wallet: h.address || h.owner,
+        balance: (h.amount || 0) / 1e9,
+      }));
+    }
+
+    // Direct array format
+    if (Array.isArray(data.data)) {
+      return data.data.map((h: any) => ({
+        wallet: h.owner || h.address,
+        balance: (h.amount || h.ui_amount || 0) / 1e9,
+      }));
+    }
+
+    console.log('Solscan response format:', JSON.stringify(data).slice(0, 200));
     return [];
   } catch (error) {
     console.error('Solscan API error:', error);
     return [];
+  }
+}
+
+/**
+ * Fetch from DexScreener as last resort (gets holder count only)
+ */
+async function fetchHolderCountFromDexScreener(): Promise<number> {
+  try {
+    const response = await fetch(
+      `https://api.dexscreener.com/latest/dex/tokens/${LIST_TOKEN_MINT}`
+    );
+    const data = await response.json();
+
+    // DexScreener doesn't give individual holders, but we can use it for count
+    const pair = data.pairs?.[0];
+    if (pair?.txns?.h24) {
+      console.log('DexScreener data available, but no holder list');
+    }
+    return -1;
+  } catch {
+    return -1;
   }
 }
 

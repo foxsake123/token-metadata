@@ -14,6 +14,7 @@ import { EPSTEIN_ACTIVE_BURNS } from '../burn/config';
 import { DiscordWebhook } from './discord';
 import { getHolderCount, getDailyVolume, checkHolderMilestones, checkVolumeMilestones } from './holders';
 import { updateOddsFile, loadOddsFile } from './odds-updater';
+import { checkAndProcessPayouts, getPayoutPreview } from './payout-scheduler';
 
 // Environment variable validation
 interface EnvConfig {
@@ -561,6 +562,20 @@ Supply reduced. Value increased.
     });
   }, ODDS_UPDATE_INTERVAL);
   console.log(`📊 Polymarket odds updater running every ${ODDS_UPDATE_INTERVAL / 1000 / 60} minutes`);
+
+  // Start weekly payout checker (every hour, executes on Sundays at 6PM)
+  const PAYOUT_CHECK_INTERVAL = 60 * 60 * 1000; // 1 hour
+  const AUTO_PAYOUTS = process.env.AUTO_PAYOUTS === 'true'; // Default to dry run
+  setInterval(() => {
+    checkAndProcessPayouts(!AUTO_PAYOUTS).then(result => {
+      if (result && result.totalPaid > 0) {
+        console.log(`💰 Weekly payouts processed: ${result.totalPaid} LIST to ${result.recipientCount} recipients`);
+      }
+    }).catch(err => {
+      console.error('❌ Payout check error:', err);
+    });
+  }, PAYOUT_CHECK_INTERVAL);
+  console.log(`💰 Payout scheduler running (${AUTO_PAYOUTS ? 'LIVE' : 'DRY RUN'} mode, checks hourly, pays Sundays 6PM)`);
 
   // Keep alive
   process.on('SIGTERM', () => {
